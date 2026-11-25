@@ -1,0 +1,3 @@
+"""
+DocSentry Application Package
+"""
