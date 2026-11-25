@@ -1,0 +1,18 @@
+# Virtual environments & caches
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+
+# Upstream reference clone & raw/large datasets
+_ember2024_repo/
+data/raw/
+data/processed/*.parquet
+
+# Private personal PDFs
+data/demo_pdfs/user/
+
+# Logs & environment secrets
+*.log
+.env
