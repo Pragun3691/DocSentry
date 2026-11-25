@@ -1,0 +1,27 @@
+{
+  "champion_model": "XGBoost",
+  "calibration_method": "Isotonic Regression",
+  "optimal_decision_threshold": 0.4082782782782783,
+  "val_fpr_at_threshold": 0.0082,
+  "test_fpr_at_threshold": 0.019666666666666666,
+  "test_recall_at_threshold": 0.9273333333333333,
+  "review_band": {
+    "low": 0.29000000000000004,
+    "high": 0.55,
+    "val_review_rate": 0.01830183018301834,
+    "val_auto_accuracy": 0.9909331703341483,
+    "test_review_rate": 0.037666666666666626,
+    "test_auto_accuracy": 0.9723761690335989
+  },
+  "conformal_prediction": {
+    "alpha": 0.05,
+    "q_hat": 0.079170201740128,
+    "test_coverage": 0.89725
+  },
+  "ood_thresholds": {
+    "size_p05": 358.0,
+    "size_p995": 30602208.0,
+    "numstrings_p05": 17.0,
+    "numstrings_p995": 181974.5
+  }
+}

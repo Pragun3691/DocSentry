@@ -1,0 +1,43 @@
+{
+  "malicious_uri_zero": {
+    "count": 1067,
+    "detected_default_threshold": 664,
+    "recall_default_threshold": 0.6223,
+    "recall_pct": "62.23%",
+    "detected_calibrated_threshold": 761,
+    "recall_calibrated_threshold": 0.7132,
+    "recall_calibrated_pct": "71.32%"
+  },
+  "malicious_uri_gt_zero": {
+    "count": 4933,
+    "detected_default_threshold": 4761,
+    "recall_default_threshold": 0.9651,
+    "recall_pct": "96.51%",
+    "detected_calibrated_threshold": 4803,
+    "recall_calibrated_threshold": 0.9736,
+    "recall_calibrated_pct": "97.36%"
+  },
+  "benign_uri_zero": {
+    "count": 4725,
+    "false_positives_default_threshold": 18,
+    "fpr_default_threshold": 0.0038,
+    "fpr_pct": "0.38%",
+    "false_positives_calibrated_threshold": 46,
+    "fpr_calibrated_threshold": 0.0097,
+    "fpr_calibrated_pct": "0.97%"
+  },
+  "benign_uri_gt_zero": {
+    "count": 1275,
+    "false_positives_default_threshold": 37,
+    "fpr_default_threshold": 0.029,
+    "fpr_pct": "2.90%",
+    "false_positives_calibrated_threshold": 72,
+    "fpr_calibrated_threshold": 0.0565,
+    "fpr_calibrated_pct": "5.65%"
+  },
+  "shap_attribution": {
+    "total_mean_abs_shap": 7.2883,
+    "uri_mean_abs_shap": 1.4109,
+    "uri_attribution_share_pct": 19.36
+  }
+}
