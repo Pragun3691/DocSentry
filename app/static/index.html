@@ -1,211 +1,222 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DocSentry - Explainable PDF Malware Triage</title>
+  <title>DocSentry — Explainable PDF Malware Triage</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Header -->
-  <header>
-    <div class="container header-inner">
-      <div class="brand">
-        <svg class="brand-icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 2.18l7 3.12v4.7c0 4.67-3.13 9.04-7 10.18-3.87-1.14-7-5.51-7-10.18V6.3l7-3.12zm-1 5v2h2V8.18h-2zm0 4v6h2v-6h-2z"/>
-        </svg>
-        <div class="brand-title">DocSentry</div>
-      </div>
-      <div class="header-actions">
-        <button id="btn-model-info" class="btn" aria-label="View Model Information">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-          </svg>
-          Model Info
-        </button>
-        <button id="btn-theme-toggle" class="btn" aria-label="Toggle Theme">
-          <span id="theme-icon">☀️</span>
-          <span id="theme-text">Light</span>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- One-Line Intro under Header -->
-  <div class="intro-bar">
-    <div class="container">
-      <p class="intro-text">
-        DocSentry: explainable, uncertainty-aware PDF triage. Built on the EMBER2024 benchmark subset. No execution: the file is never opened, rendered or run.
-      </p>
+  <!-- Top Ticker Strip -->
+  <div class="ticker-strip" aria-hidden="true">
+    <div class="ticker-track">
+      <span>&lt;&lt;STATIC ANALYSIS &middot; FILE IS NEVER OPENED OR RUN &middot; EXPLAINABLE &middot; UNCERTAINTY-AWARE&gt;&gt;</span>
+      <span>&lt;&lt;STATIC ANALYSIS &middot; FILE IS NEVER OPENED OR RUN &middot; EXPLAINABLE &middot; UNCERTAINTY-AWARE&gt;&gt;</span>
+      <span>&lt;&lt;STATIC ANALYSIS &middot; FILE IS NEVER OPENED OR RUN &middot; EXPLAINABLE &middot; UNCERTAINTY-AWARE&gt;&gt;</span>
     </div>
   </div>
 
-  <!-- Main Content -->
-  <main>
-    <div class="container main-content">
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#top" class="wordmark">DocSentry</a>
+      <nav class="header-nav" aria-label="Primary navigation">
+        <a href="#scan" class="nav-link">Scan</a>
+        <a href="#how-it-works" class="nav-link">How it works</a>
+        <a href="#limits" class="nav-link">Limits</a>
+        <a href="#model" class="nav-link">Model</a>
+        <button id="btn-theme-toggle" class="pill-btn" type="button" aria-label="Toggle color theme">
+          <span id="theme-icon" aria-hidden="true">🌙</span>
+          <span id="theme-text">Dark</span>
+        </button>
+      </nav>
+    </div>
+  </header>
 
-      <!-- Result Card Section (Positioned above Upload Zone after scan) -->
-      <section id="result-section" class="result-section" aria-live="polite">
-        <div class="result-card">
-          <!-- Top Row: Large Verdict Badge & Primary Metric -->
-          <div class="result-top-row">
-            <div id="verdict-badge" class="verdict-badge verdict-benign">
-              <span id="verdict-icon" class="verdict-icon" aria-hidden="true"></span>
-              <span id="verdict-text">BENIGN</span>
-            </div>
-
-            <div class="prob-display-block">
-              <div class="prob-display-label">Calibrated Risk</div>
-              <div id="result-prob-large" class="prob-display-value">0.0%</div>
-            </div>
-
-            <div class="result-meta-badges">
-              <span class="meta-badge" id="badge-file-name">document.pdf</span>
-              <span class="meta-badge" id="badge-file-size">0 KB</span>
-              <span class="meta-badge" id="badge-scan-time">0 ms</span>
-            </div>
+  <main id="top">
+    <!-- Hero & Upload Section -->
+    <section id="scan" class="hero-section">
+      <div class="container">
+        <div class="hero-header-grid">
+          <div class="hero-copy">
+            <h1 class="hero-headline">Check a PDF before you open it.</h1>
+            <p class="hero-sub">Static, explainable, uncertainty-aware PDF triage. The file is never opened or run.</p>
           </div>
-
-          <!-- OOD Warning Banner -->
-          <div id="ood-banner" class="ood-warning-banner" role="alert">
-            <svg viewBox="0 0 24 24" class="ood-icon" aria-hidden="true">
-              <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+          <div class="hero-decor" aria-hidden="true">
+            <svg class="hero-starburst" viewBox="0 0 200 200">
+              <polygon points="100,6 118,54 166,22 146,72 196,74 152,104 190,144 138,136 144,188 106,150 74,194 74,142 22,164 52,118 6,96 56,80 28,32 78,56" />
             </svg>
-            <div>
-              <strong>Out-Of-Distribution Warning:</strong> File size or string count deviates beyond the training set's 0.5%–99.5% envelope. Interpret feature attributions with caution.
+          </div>
+        </div>
+
+        <!-- Mint Upload Panel -->
+        <div class="panel panel-mint upload-panel">
+          <div id="upload-zone" class="upload-dropzone" tabindex="0" role="region" aria-label="PDF upload dropzone">
+            <input type="file" id="file-input" class="sr-only" accept=".pdf,application/pdf">
+            <label for="file-input" class="upload-label">
+              <span class="upload-title">Drop a PDF here to inspect</span>
+              <span class="upload-meta">PDF only, up to 20 MiB, processed in memory and never saved</span>
+            </label>
+            <div class="upload-actions">
+              <button type="button" id="btn-browse" class="pill-btn pill-btn-primary">Choose PDF file</button>
             </div>
           </div>
 
-          <!-- Result Body -->
-          <div class="result-body">
-            <!-- Plain-Language Explanation Sentence -->
-            <div class="reason-box" id="result-reason">
-              Analyzing document...
+          <!-- Try a sample row (built-in synthetic PDFs served by server) -->
+          <div class="sample-row">
+            <span class="sample-label">Try a sample:</span>
+            <button type="button" class="pill-btn pill-btn-sm sample-btn" data-sample="malicious">Sample: harmless 20-page report</button>
+            <button type="button" class="pill-btn pill-btn-sm sample-btn" data-sample="review">Sample: harmless 5.5 MB padded file</button>
+          </div>
+          <p class="sample-note">Both samples are harmless synthetic PDFs. They are flagged or sent to review mainly because their low entropy and unusual string-count or byte patterns (and, for the 5.5 MB sample, the calibrator's 0.4082 plateau) differ from typical benign PDFs, not because of links or keywords.</p>
+
+          <!-- Loading State -->
+          <div id="loading-overlay" class="loading-box" role="status" aria-live="polite">
+            <div class="spinner" aria-hidden="true"></div>
+            <div class="loading-title">Inspecting raw PDF bytes…</div>
+            <div id="loading-stage" class="loading-stage">Extracting 658 static features…</div>
+          </div>
+
+          <!-- Alert Box -->
+          <div id="alert-box" class="alert-box" role="alert"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Result Report Sheet (Appears directly under hero after scan) -->
+    <section id="result-section" class="report-section" aria-live="polite">
+      <div class="container">
+        <div class="report-sheet">
+
+          <!-- VERDICT Section -->
+          <div class="label-bar">VERDICT</div>
+          <div class="verdict-block">
+            <div class="verdict-main">
+              <div id="verdict-badge" class="verdict-badge verdict-benign">
+                <span id="verdict-icon" class="verdict-icon" aria-hidden="true"></span>
+                <span id="verdict-text">BENIGN</span>
+              </div>
+
+              <div class="prob-hero">
+                <!-- Subtle starburst SVG behind probability number -->
+                <svg class="starburst-bg" viewBox="0 0 200 200" aria-hidden="true">
+                  <polygon points="100,6 118,54 166,22 146,72 196,74 152,104 190,144 138,136 144,188 106,150 74,194 74,142 22,164 52,118 6,96 56,80 28,32 78,56" />
+                </svg>
+                <div class="prob-caption">CALIBRATED RISK</div>
+                <div id="result-prob-large" class="prob-number">0.0%</div>
+              </div>
             </div>
 
-            <!-- Evidence Note (/URI Dependence Note) -->
-            <div id="evidence-note" class="evidence-note" style="display: none;"></div>
+            <p id="result-reason" class="reason-sentence">Analyzing document…</p>
 
-            <!-- Probability Gauge Spectrum -->
-            <div class="gauge-container">
+            <!-- OUT OF RANGE Notice -->
+            <div id="ood-banner" class="notice-box notice-ood" role="alert">
+              <span class="label-bar-inline">OUT OF RANGE</span>
+              <span id="ood-banner-text">This file's size or text content is outside the range of the files the model was trained on. Treat the score with extra caution.</span>
+            </div>
+
+            <!-- /URI Evidence Note -->
+            <div id="evidence-note" class="notice-box notice-evidence" style="display: none;"></div>
+
+            <!-- Probability Gauge -->
+            <div class="gauge-block">
               <div class="gauge-header">
                 <span class="gauge-title">
                   Calibrated Malware Risk Probability
-                  <span class="tooltip-trigger" tabindex="0" role="tooltip" aria-label="Calibrated probabilities are stepwise (isotonic regression): raw model scores between 0.20 and 0.30 all display as 40.8% (inside the manual review band)." title="Calibrated probabilities are stepwise (isotonic regression): raw model scores between 0.20 and 0.30 all display as 40.8% (inside the manual review band).">ℹ</span>
+                  <button type="button" class="tooltip-trigger" aria-label="About stepwise isotonic calibration" title="Calibrated probabilities are stepwise (isotonic): raw scores between 0.20 and 0.30 all show as 40.8%.">?</button>
                 </span>
-                <span class="gauge-value" id="gauge-risk-val">0.0%</span>
+                <span id="gauge-risk-val" class="gauge-val-mono">0.0%</span>
               </div>
-              <div class="gauge-bar-track">
-                <div class="gauge-zone gauge-zone-benign" title="Benign Zone (&lt; 29.0%)"></div>
-                <div class="gauge-zone gauge-zone-review" title="Review Band (29.0% - 55.0%)"></div>
-                <div class="gauge-zone gauge-zone-malicious" title="Malicious Zone (&gt; 55.0%)"></div>
-                <div class="gauge-threshold-marker" style="left: 40.83%;" title="Decision Threshold (40.83%)"></div>
-                <div id="gauge-needle" class="gauge-needle" style="left: 0%;">
-                  <div id="gauge-needle-bubble" class="gauge-needle-bubble">0.0%</div>
-                </div>
+              <div class="gauge-track">
+                <div class="gauge-zone gauge-zone-benign" title="Benign zone (&lt; 29.0%)"></div>
+                <div class="gauge-zone gauge-zone-review" title="Manual review band (29.0%–55.0%)"></div>
+                <div class="gauge-zone gauge-zone-malicious" title="Likely malicious zone (&gt; 55.0%)"></div>
+                <div class="gauge-threshold" style="left: 40.83%;" title="Operating threshold 40.8%"></div>
+                <div id="gauge-needle" class="gauge-needle" style="left: 0%;"></div>
               </div>
-              <div class="gauge-labels">
-                <span>0% (Benign)</span>
-                <span class="gauge-label-tick" style="left: 29%;">29% [Review Low]</span>
-                <span class="gauge-label-tick" style="left: 40.83%;">40.8% [Threshold]</span>
-                <span class="gauge-label-tick" style="left: 55%;">55% [Review High]</span>
-                <span>100% (Malicious)</span>
+              <div class="gauge-zone-labels">
+                <span class="gauge-zlabel gauge-zlabel-benign">BENIGN<span class="zone-pct"> 0–29%</span></span>
+                <span class="gauge-zlabel gauge-zlabel-review">REVIEW<span class="zone-pct"> 29–55%</span></span>
+                <span class="gauge-zlabel gauge-zlabel-malicious">MALICIOUS<span class="zone-pct"> 55–100%</span></span>
               </div>
-            </div>
-
-            <!-- Explanation Charts Grid -->
-            <div class="charts-grid">
-              <!-- Diverging SHAP Bar Chart -->
-              <div class="chart-card">
-                <div class="chart-card-title">
-                  <span>Top Contributing Features (SHAP Attribution)</span>
-                  <span class="chart-sub-label">Impact on Risk</span>
-                </div>
-                <div class="chart-card-subtitle">
-                  Green pushes toward benign (negative SHAP), Red pushes toward malicious (positive SHAP).
-                </div>
-                <div id="shap-chart" class="svg-chart-container"></div>
+              <div class="gauge-ticks">
+                <span>0%</span>
+                <span>29% Low</span>
+                <span>40.8% Threshold</span>
+                <span>55% High</span>
+                <span>100%</span>
               </div>
-
-              <!-- Feature Family Attribution Summary -->
-              <div class="chart-card">
-                <div class="chart-card-title">
-                  <span>Feature Family Contributions</span>
-                  <span class="chart-sub-label">Net Attribution</span>
-                </div>
-                <div class="chart-card-subtitle">
-                  Aggregated log-odds impact grouped by static feature representation family.
-                </div>
-                <div id="family-chart" class="svg-chart-container"></div>
+              <div class="gauge-needle-readout">
+                <span id="gauge-needle-bubble" class="needle-pill">Needle: 0.0%</span>
+                <span class="gauge-step-hint">Stepwise (isotonic): raw scores 0.20–0.30 display as 40.8%</span>
               </div>
             </div>
+          </div>
 
-            <!-- File Details Table -->
+          <!-- WHY Section -->
+          <div class="label-bar">WHY</div>
+          <div class="why-block">
+            <div class="chart-panel">
+              <h2 class="chart-heading">Top 8 Contributing Features (SHAP Log-Odds Impact)</h2>
+              <p class="chart-sub">Negative values push toward benign; positive values push toward malicious.</p>
+              <div id="shap-chart" class="chart-scroll-box"></div>
+              <div id="shap-table-sr" class="sr-only"></div>
+            </div>
+
+            <div class="chart-panel">
+              <h2 class="chart-heading">Feature Family Contributions (Net Attribution)</h2>
+              <p class="chart-sub">Summed SHAP attribution grouped by static feature representation family.</p>
+              <div id="family-chart" class="chart-scroll-box"></div>
+              <div id="family-table-sr" class="sr-only"></div>
+            </div>
+          </div>
+
+          <!-- FILE DETAILS Section (Peach Panel) -->
+          <div class="label-bar">FILE DETAILS</div>
+          <div class="panel panel-peach details-panel">
             <div class="details-grid">
-              <div class="detail-item">
-                <span class="detail-label">File Name</span>
-                <span class="detail-value" id="detail-filename">-</span>
+              <div class="detail-cell">
+                <span class="detail-key">File Name</span>
+                <span class="detail-val" id="detail-filename">-</span>
               </div>
-              <div class="detail-item">
-                <span class="detail-label">File Size</span>
-                <span class="detail-value" id="detail-filesize">-</span>
+              <div class="detail-cell">
+                <span class="detail-key">File Size</span>
+                <span class="detail-val" id="detail-filesize">-</span>
               </div>
-              <div class="detail-item">
-                <span class="detail-label">SHA-256 Checksum</span>
-                <span class="detail-value">
-                  <span id="detail-sha256">-</span>
-                  <button id="btn-copy-hash" class="copy-btn" title="Copy SHA-256 hash">Copy</button>
-                </span>
+              <div class="detail-cell detail-cell-wide">
+                <span class="detail-key">SHA-256 Checksum</span>
+                <div class="hash-row">
+                  <span class="detail-val hash-mono" id="detail-sha256">-</span>
+                  <button type="button" id="btn-copy-hash" class="pill-btn pill-btn-sm">Copy</button>
+                </div>
               </div>
-              <div class="detail-item">
-                <span class="detail-label">Raw Model Probability</span>
-                <span class="detail-value" id="detail-raw-prob">-</span>
+              <div class="detail-cell">
+                <span class="detail-key">Raw Model Probability</span>
+                <span class="detail-val" id="detail-raw-prob">-</span>
               </div>
-              <div class="detail-item">
-                <span class="detail-label">Analysis Latency</span>
-                <span class="detail-value" id="detail-timing">-</span>
+              <div class="detail-cell">
+                <span class="detail-key">Analysis Time</span>
+                <span class="detail-val" id="detail-timing">-</span>
               </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      <!-- Upload Zone -->
-      <section id="upload-section" class="upload-section">
-        <div id="upload-zone" class="upload-card" tabindex="0" role="button" aria-label="Upload PDF Document for Scan">
-          <input type="file" id="file-input" class="file-input" accept=".pdf,application/pdf" aria-hidden="true">
-          <svg class="upload-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
-          </svg>
-          <div class="upload-title">Drop your PDF here or click to browse</div>
-          <div class="upload-subtitle">Inspection is purely static — no execution: the file is never opened, rendered or run.</div>
-          <div class="upload-limits">
-            <span>Format: <strong>%PDF Only</strong></span>
-            <span>Max Size: <strong>20 MB</strong></span>
-            <span>Analysis: <strong>Local &amp; Memory-Only</strong></span>
-          </div>
         </div>
+      </div>
+    </section>
 
-        <!-- Loading Progress -->
-        <div id="loading-overlay" class="loading-overlay" role="status" aria-live="polite">
-          <div class="spinner"></div>
-          <div class="loading-title">Analyzing PDF Document...</div>
-          <div id="loading-stage" class="loading-stage">Extracting 658 static features from raw bytes...</div>
+    <!-- Session History Section -->
+    <section id="session-history" class="section-block">
+      <div class="container">
+        <div class="label-bar">HISTORY</div>
+        <div class="section-header-row">
+          <h2 class="section-heading">Session History</h2>
+          <button type="button" id="btn-clear-history" class="pill-btn pill-btn-sm">Clear</button>
         </div>
-
-        <!-- Alert Notification Box -->
-        <div id="alert-box" class="alert-box alert-error" role="alert"></div>
-      </section>
-
-      <!-- Session Scan History Table -->
-      <section class="history-section">
-        <div class="history-header">
-          <div class="history-title">Session Scan History</div>
-          <button id="btn-clear-history" class="btn" style="font-size: 0.85rem; padding: 0.35rem 0.75rem;">Clear History</button>
-        </div>
-        <div class="table-responsive">
-          <table id="history-table">
+        <div id="history-empty" class="history-empty-text">No files scanned in this session yet.</div>
+        <div id="history-table-wrap" class="table-scroll-box" style="display: none;">
+          <table class="data-table">
             <thead>
               <tr>
                 <th>Time</th>
@@ -213,74 +224,88 @@
                 <th>Size</th>
                 <th>Verdict</th>
                 <th>Calibrated Risk</th>
-                <th>OOD Warning</th>
-                <th>Scan Time</th>
+                <th>Out of Range</th>
+                <th>Latency</th>
               </tr>
             </thead>
-            <tbody id="history-table-body">
-              <tr>
-                <td colspan="7" class="empty-history">No files scanned in this session yet. Upload a PDF above to begin.</td>
-              </tr>
-            </tbody>
+            <tbody id="history-table-body"></tbody>
           </table>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- Informational & Honest Limitations Section -->
-      <section class="info-section">
-        <div class="info-card">
-          <h3>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-            </svg>
-            How to Interpret DocSentry Results
-          </h3>
-          <ul class="info-list">
-            <li><strong>Three-State Triage:</strong> Files scoring &lt; 29.0% are auto-passed as <em>Benign</em>. Files &gt; 55.0% are flagged as likely malicious. Scores inside [29.0%, 55.0%] are escalated to <em>Needs Manual Review</em>.</li>
-            <li><strong>Isotonic Calibration:</strong> Probabilities are calibrated on validation data. Under newer data they can be too optimistic, which is why a manual-review band exists.</li>
-            <li><strong>SHAP Attribution:</strong> Shows the exact mathematical contribution (in log-odds margin) of each feature pushing the score toward malicious or benign.</li>
-            <li><strong>No execution: the file is never opened, rendered or run:</strong> Only byte-level statistics, entropy distributions, and printable strings are extracted. The file is never interpreted or opened.</li>
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="section-block">
+      <div class="container">
+        <div class="label-bar">HOW IT WORKS</div>
+        <div class="steps-grid">
+          <div class="step-card panel-mint">
+            <div class="step-num">01</div>
+            <h3>Upload</h3>
+            <p>Select a PDF up to 20 MiB. It stays in memory and is discarded immediately after scoring.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num">02</div>
+            <h3>Read bytes only</h3>
+            <p>Extracts 658 static byte, entropy, and string statistics. The file is never opened, rendered, or run.</p>
+          </div>
+          <div class="step-card panel-peach">
+            <div class="step-num">03</div>
+            <h3>Score and explain</h3>
+            <p>XGBoost produces a calibrated risk probability alongside exact TreeSHAP feature attributions.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num">04</div>
+            <h3>Flag uncertain files</h3>
+            <p>Scores in the 29%–55% review band or outside training size/string bounds are routed to manual review.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Limitations Section -->
+    <section id="limits" class="section-block">
+      <div class="container">
+        <div class="label-bar">LIMITATIONS</div>
+        <div class="card-surface">
+          <ul class="limits-list">
+            <li><strong>Static features only:</strong> DocSentry does not execute scripts or render pages; it cannot observe runtime shellcode or parser memory corruption.</li>
+            <li><strong>Heavy dependence on link counts:</strong> Link annotations (<code>/URI</code>) drive a large share of attribution. Link-heavy benign files face higher false alarms, while malicious PDFs without links have lower recall.</li>
+            <li><strong>Small benign files get more false alarms:</strong> Benign files under 100 KB experience higher false-positive rates due to EMBER2024 training size distributions.</li>
+            <li><strong>Probabilities are stepwise:</strong> Isotonic calibration is a step function; raw scores between 0.20 and 0.30 all display as 40.8% and route to manual review.</li>
+            <li><strong>Never run on real malicious PDFs:</strong> The model was evaluated only on EMBER2024 feature data and this app has never been run on real malicious PDFs.</li>
+            <li><strong>Not an antivirus replacement:</strong> Intended as a fast static triage pre-filter alongside dynamic sandboxing and endpoint protection.</li>
           </ul>
         </div>
+      </div>
+    </section>
 
-        <div class="info-card limitations-card">
-          <h3>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
-            </svg>
-            System Limitations &amp; Honest Boundaries
-          </h3>
-          <ul class="info-list limitations-list">
-            <li><strong>Static Features Only:</strong> DocSentry does not execute JavaScript or render pages. It cannot observe runtime zero-day memory corruption shellcode.</li>
-            <li><strong>Heavy Link (/URI) Dependence:</strong> Approximately 19.4% of total model attribution rests on link count indicators. Link-heavy benign files face elevated risk.</li>
-            <li><strong>Sub-100 KB Benign Penalty:</strong> Small benign documents face a higher false-alarm rate (22.9x higher FPR, 5.65% vs 0.25% for &ge;100 KB) due to EMBER2024 training size modes.</li>
-            <li><strong>Stepwise Isotonic Probabilities:</strong> Calibrated probabilities are produced by monotonic step functions; raw model scores between 0.20 and 0.30 all map to a flat plateau at 40.8% (routed to manual review).</li>
-            <li><strong>Not Tested on Real Malware:</strong> Evaluated strictly on the synthetic EMBER2024 static feature subset; not tested against live, zero-day malware binaries in the wild.</li>
-            <li><strong>Not an Antivirus Replacement:</strong> Intended as a fast pre-filter and triage assistant, not a substitute for defense-in-depth dynamic sandboxing or signature-based AV.</li>
-          </ul>
+    <!-- Model Section (Populated dynamically from /model-info) -->
+    <section id="model" class="section-block">
+      <div class="container">
+        <div class="label-bar">MODEL</div>
+        <div class="card-surface" id="model-info-panel">
+          <p class="muted-mono">Loading model specifications from /model-info…</p>
         </div>
-      </section>
-
-    </div>
+      </div>
+    </section>
   </main>
 
-  <!-- Model Info Modal -->
-  <div id="modal-model-info" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <!-- Model Card Modal -->
+  <div id="modal-model-card" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-mc-title">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 id="modal-title" style="font-size: 1.25rem; font-weight: 700;">DocSentry Architecture &amp; Benchmark Specifications</h2>
-        <button id="btn-close-modal" class="modal-close" aria-label="Close modal">&times;</button>
+        <h2 id="modal-mc-title">DocSentry Model Card (MODEL_CARD.md)</h2>
+        <button type="button" id="btn-close-mc" class="pill-btn pill-btn-sm" aria-label="Close Model Card">Close</button>
       </div>
-      <div class="modal-body" id="modal-info-body">
-        Loading model specifications...
-      </div>
+      <pre id="modal-mc-body" class="modal-pre">Loading…</pre>
     </div>
   </div>
 
   <!-- Footer -->
-  <footer>
-    <div class="container footer-text">
-      DocSentry: explainable, uncertainty-aware PDF triage. Built on the EMBER2024 benchmark subset. Static features only.
+  <footer class="site-footer">
+    <div class="container">
+      <p class="footer-text">DocSentry: explainable, uncertainty-aware PDF triage. Built on the EMBER2024 benchmark subset. Static features only.</p>
     </div>
   </footer>
 

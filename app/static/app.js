@@ -1,70 +1,69 @@
 /**
  * DocSentry Frontend Application Logic
- * Pure Vanilla JavaScript - Offline-First, Zero External Dependencies, Zero Blue Colors
+ * Vanilla JS — Offline-First, Zero External Dependencies, Accessible
  */
 
 document.addEventListener("DOMContentLoaded", () => {
-  // DOM Elements
   const html = document.documentElement;
   const themeToggleBtn = document.getElementById("btn-theme-toggle");
   const themeIcon = document.getElementById("theme-icon");
   const themeText = document.getElementById("theme-text");
-  
+
   const uploadZone = document.getElementById("upload-zone");
   const fileInput = document.getElementById("file-input");
+  const btnBrowse = document.getElementById("btn-browse");
+  const sampleBtns = document.querySelectorAll(".sample-btn");
   const loadingOverlay = document.getElementById("loading-overlay");
   const loadingStage = document.getElementById("loading-stage");
   const alertBox = document.getElementById("alert-box");
-  
+
   const resultSection = document.getElementById("result-section");
   const verdictBadge = document.getElementById("verdict-badge");
   const verdictIcon = document.getElementById("verdict-icon");
   const verdictText = document.getElementById("verdict-text");
   const resultProbLarge = document.getElementById("result-prob-large");
-  const badgeFileName = document.getElementById("badge-file-name");
-  const badgeFileSize = document.getElementById("badge-file-size");
-  const badgeScanTime = document.getElementById("badge-scan-time");
-  
-  const oodBanner = document.getElementById("ood-banner");
   const resultReason = document.getElementById("result-reason");
+  const oodBanner = document.getElementById("ood-banner");
   const evidenceNote = document.getElementById("evidence-note");
+
   const gaugeRiskVal = document.getElementById("gauge-risk-val");
   const gaugeNeedle = document.getElementById("gauge-needle");
   const gaugeNeedleBubble = document.getElementById("gauge-needle-bubble");
-  
+
   const shapChartContainer = document.getElementById("shap-chart");
+  const shapTableSr = document.getElementById("shap-table-sr");
   const familyChartContainer = document.getElementById("family-chart");
-  
+  const familyTableSr = document.getElementById("family-table-sr");
+
   const detailFilename = document.getElementById("detail-filename");
   const detailFilesize = document.getElementById("detail-filesize");
   const detailSha256 = document.getElementById("detail-sha256");
   const detailRawProb = document.getElementById("detail-raw-prob");
   const detailTiming = document.getElementById("detail-timing");
   const btnCopyHash = document.getElementById("btn-copy-hash");
-  
+
+  const historyEmpty = document.getElementById("history-empty");
+  const historyTableWrap = document.getElementById("history-table-wrap");
   const historyTableBody = document.getElementById("history-table-body");
   const btnClearHistory = document.getElementById("btn-clear-history");
-  
-  const btnModelInfo = document.getElementById("btn-model-info");
-  const modalModelInfo = document.getElementById("modal-model-info");
-  const btnCloseModal = document.getElementById("btn-close-modal");
-  const modalInfoBody = document.getElementById("modal-info-body");
 
-  // State
+  const modelInfoPanel = document.getElementById("model-info-panel");
+  const modalModelCard = document.getElementById("modal-model-card");
+  const modalMcBody = document.getElementById("modal-mc-body");
+  const btnCloseMc = document.getElementById("btn-close-mc");
+
   let sessionScans = [];
   let modelInfoData = null;
+  let lastContributors = null;
+  let lastFamilySummary = null;
+  let lastIsMobile = window.innerWidth < 640;
 
   // -------------------------------------------------------------------------
-  // 1. Theme Management (defaults to dark if prefers-color-scheme: dark)
+  // 1. Theme Management (Light default, saved localStorage toggle)
   // -------------------------------------------------------------------------
   function initTheme() {
-    const savedTheme = localStorage.getItem("docsentry_theme");
-    if (savedTheme) {
-      setTheme(savedTheme);
-    } else {
-      const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-      setTheme(prefersDark ? "dark" : "light");
-    }
+    const savedTheme = localStorage.getItem("docsentry_theme") || "light";
+    setTheme(savedTheme);
   }
 
   function setTheme(theme) {
@@ -80,80 +79,88 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   themeToggleBtn.addEventListener("click", () => {
-    const current = html.getAttribute("data-theme") || "dark";
+    const current = html.getAttribute("data-theme") || "light";
     setTheme(current === "dark" ? "light" : "dark");
   });
 
   // -------------------------------------------------------------------------
-  // 2. Model Info Fetching & Modal
+  // 2. Model Section (Populated dynamically from /model-info)
   // -------------------------------------------------------------------------
   async function fetchModelInfo() {
     try {
       const res = await fetch("/model-info");
-      if (res.ok) {
-        modelInfoData = await res.json();
-      }
-    } catch (e) {
-      console.warn("Could not fetch model info at startup:", e);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      modelInfoData = await res.json();
+      renderModelSection(modelInfoData);
+    } catch (err) {
+      modelInfoPanel.innerHTML = `<p class="muted-mono">Could not load model metadata from /model-info.</p>`;
     }
   }
 
-  function renderModelInfoModal() {
-    if (!modelInfoData) {
-      modalInfoBody.innerHTML = "<p>Model specifications could not be retrieved from the server.</p>";
-      return;
-    }
+  function renderModelSection(data) {
+    const m = data.test_metrics || {};
+    const ci = data.bootstrap_95ci || {};
+    const rb = data.review_band || {};
+    const errs = data.error_counts || {};
+    const valErr = errs.validation || {};
+    const testErr = errs.test || {};
+    const uri = data.uri_dependence || {};
+    const uriMal0 = uri.malicious_uri_zero || {};
 
-    const m = modelInfoData.test_metrics || {};
-    const rb = modelInfoData.review_band || {};
-    const ood = modelInfoData.ood_thresholds || {};
-
-    modalInfoBody.innerHTML = `
-      <div style="margin-bottom: 1.25rem;">
-        <h4 style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem;">Champion Model Configuration</h4>
-        <p><strong>Architecture:</strong> ${modelInfoData.model_architecture} | <strong>Inputs:</strong> ${modelInfoData.features_count} static features</p>
-        <p><strong>Calibrator:</strong> ${modelInfoData.calibration_method} | <strong>Operating Threshold:</strong> ${modelInfoData.operating_threshold}</p>
+    modelInfoPanel.innerHTML = `
+      <p><strong>Chosen Architecture:</strong> ${data.model_architecture} (${data.features_count} static features, ${data.calibration_method}, operating threshold ${data.operating_threshold})</p>
+      <div class="model-stats-grid">
+        <div class="model-stat-box">
+          <div class="model-stat-k">Test F1 (95% CI)</div>
+          <div class="model-stat-v">${ci.f1 || (m.test_f1 ? m.test_f1.toFixed(4) : "-")}</div>
+        </div>
+        <div class="model-stat-box">
+          <div class="model-stat-k">Test Recall (95% CI)</div>
+          <div class="model-stat-v">${ci.recall || (m.test_recall ? m.test_recall.toFixed(4) : "-")}</div>
+        </div>
+        <div class="model-stat-box">
+          <div class="model-stat-k">Test FPR (95% CI)</div>
+          <div class="model-stat-v">${ci.fpr || (m.test_fpr ? m.test_fpr.toFixed(4) : "-")}</div>
+        </div>
+        <div class="model-stat-box">
+          <div class="model-stat-k">Review Band</div>
+          <div class="model-stat-v">[${(rb.low * 100).toFixed(0)}%, ${(rb.high * 100).toFixed(0)}%]</div>
+        </div>
+        <div class="model-stat-box">
+          <div class="model-stat-k">Test Review Rate</div>
+          <div class="model-stat-v">${(rb.test_review_rate * 100).toFixed(2)}% (Auto-Acc ${(rb.test_auto_accuracy * 100).toFixed(2)}%)</div>
+        </div>
+        <div class="model-stat-box">
+          <div class="model-stat-k">Errors at 0.4083</div>
+          <div class="model-stat-v">Test: ${testErr.total ?? "-"} errors (${testErr.inside_band ?? "-"} inside the review band, ${testErr.outside_band ?? "-"} outside). Validation: ${valErr.total ?? "-"} (${valErr.inside_band ?? "-"} inside, ${valErr.outside_band ?? "-"} outside).</div>
+        </div>
       </div>
-
-      <h4 style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">EMBER2024 Test Set Evaluation (12,000 Documents)</h4>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; margin-bottom: 1.25rem;">
-        <div style="background: var(--bg-tertiary); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);"><div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Accuracy</div><div style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">${(m.test_accuracy * 100).toFixed(2)}%</div></div>
-        <div style="background: var(--bg-tertiary); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);"><div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">F1-Score</div><div style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">${(m.test_f1 * 100).toFixed(2)}%</div></div>
-        <div style="background: var(--bg-tertiary); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);"><div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Malicious Recall</div><div style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">${(m.test_recall * 100).toFixed(2)}%</div></div>
-        <div style="background: var(--bg-tertiary); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);"><div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Benign FPR</div><div style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">${(m.test_fpr * 100).toFixed(2)}%</div></div>
-        <div style="background: var(--bg-tertiary); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);"><div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">ROC-AUC</div><div style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">${m.test_roc_auc?.toFixed(4) || "0.9887"}</div></div>
-        <div style="background: var(--bg-tertiary); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);"><div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">PR-AUC</div><div style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">${m.test_pr_auc?.toFixed(4) || "0.9911"}</div></div>
-      </div>
-
-      <h4 style="font-weight: 600; color: var(--text-primary); margin-top: 1rem; margin-bottom: 0.5rem;">Review Band &amp; Out-of-Distribution Envelope</h4>
-      <p style="margin-bottom: 0.5rem;"><strong>Review Band Interval:</strong> [${(rb.low * 100).toFixed(1)}%, ${(rb.high * 100).toFixed(1)}%] (Test Auto-Accuracy: ${(rb.test_auto_accuracy * 100).toFixed(2)}%)</p>
-      <p style="margin-bottom: 0.5rem;"><strong>File Size Envelope (0.5% - 99.5%):</strong> ${(ood.size_p05 / 1024).toFixed(1)} KB to ${(ood.size_p995 / (1024*1024)).toFixed(1)} MB</p>
-      <p style="margin-bottom: 0.5rem;"><strong>String Count Envelope (0.5% - 99.5%):</strong> ${ood.numstrings_p05} to ${ood.numstrings_p995?.toLocaleString()} strings</p>
+      <p class="muted-mono" style="margin-bottom: 1rem;">
+        /URI=0 malicious recall: ${uriMal0.recall_calibrated_pct || "-"} at calibrated threshold 0.4083 (${uriMal0.recall_pct || "-"} at default 0.50 threshold).
+      </p>
+      <button type="button" id="btn-open-mc" class="pill-btn pill-btn-sm">View Model Card (MODEL_CARD.md)</button>
     `;
+
+    const btnOpenMc = document.getElementById("btn-open-mc");
+    if (btnOpenMc) {
+      btnOpenMc.addEventListener("click", () => {
+        modalMcBody.textContent = data.model_card_markdown || "MODEL_CARD.md unavailable.";
+        modalModelCard.classList.add("open");
+      });
+    }
   }
 
-  btnModelInfo.addEventListener("click", () => {
-    renderModelInfoModal();
-    modalModelInfo.classList.add("open");
-  });
-
-  btnCloseModal.addEventListener("click", () => {
-    modalModelInfo.classList.remove("open");
-  });
-
+  btnCloseMc.addEventListener("click", () => modalModelCard.classList.remove("open"));
   window.addEventListener("click", (e) => {
-    if (e.target === modalModelInfo) {
-      modalModelInfo.classList.remove("open");
-    }
+    if (e.target === modalModelCard) modalModelCard.classList.remove("open");
   });
 
   // -------------------------------------------------------------------------
-  // 3. Alerts & UI Helpers
+  // 3. Helpers & File Upload
   // -------------------------------------------------------------------------
   function showAlert(msg) {
     alertBox.textContent = msg;
     alertBox.style.display = "block";
-    alertBox.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
   function hideAlert() {
@@ -163,16 +170,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function formatBytes(bytes) {
     if (bytes === 0) return "0 B";
-    const k = 1024;
+    const k = 1000;
     const sizes = ["B", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   }
 
-  // -------------------------------------------------------------------------
-  // 4. File Drag & Drop & Upload Handling
-  // -------------------------------------------------------------------------
-  uploadZone.addEventListener("click", () => fileInput.click());
+  btnBrowse.addEventListener("click", (e) => {
+    e.stopPropagation();
+    fileInput.click();
+  });
+
+  uploadZone.addEventListener("click", (e) => {
+    if (e.target !== btnBrowse && e.target.tagName !== "LABEL") {
+      fileInput.click();
+    }
+  });
 
   uploadZone.addEventListener("keydown", (e) => {
     if (e.key === "Enter" || e.key === " ") {
@@ -186,9 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
     uploadZone.classList.add("dragover");
   });
 
-  uploadZone.addEventListener("dragleave", () => {
-    uploadZone.classList.remove("dragover");
-  });
+  uploadZone.addEventListener("dragleave", () => uploadZone.classList.remove("dragover"));
 
   uploadZone.addEventListener("drop", (e) => {
     e.preventDefault();
@@ -204,65 +215,65 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  sampleBtns.forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const sampleType = btn.getAttribute("data-sample");
+      hideAlert();
+      uploadZone.style.display = "none";
+      loadingOverlay.style.display = "block";
+      loadingStage.textContent = `Running built-in synthetic sample (${sampleType})…`;
+      try {
+        const res = await fetch(`/demo-scan/${sampleType}`);
+        if (!res.ok) throw new Error(`Sample scan failed (HTTP ${res.status})`);
+        const data = await res.json();
+        displayResult(data);
+        addToHistory(data);
+      } catch (err) {
+        showAlert(err.message || "Sample scan failed.");
+      } finally {
+        loadingOverlay.style.display = "none";
+        uploadZone.style.display = "block";
+      }
+    });
+  });
+
   async function handleFile(file) {
     hideAlert();
-
-    // Client-side pre-validations
     if (!file.name.toLowerCase().endsWith(".pdf")) {
-      showAlert("Invalid file format. DocSentry accepts %PDF files only.");
+      showAlert("Invalid file format. PDF files only.");
       return;
     }
-
     if (file.size === 0) {
       showAlert("Uploaded file is empty (0 bytes).");
       return;
     }
-
     if (file.size > 20 * 1024 * 1024) {
-      showAlert("File exceeds the 20 MB size limit for real-time inspection.");
+      showAlert("File exceeds the 20 MB size limit.");
       return;
     }
 
-    // UI Loading state
     uploadZone.style.display = "none";
     loadingOverlay.style.display = "block";
-    loadingStage.textContent = "Extracting 658 static features from raw bytes...";
+    loadingStage.textContent = "Extracting 658 static features from raw bytes…";
 
     const formData = new FormData();
     formData.append("file", file);
 
-    const stageTimer1 = setTimeout(() => {
-      loadingStage.textContent = "Executing calibrated XGBoost risk inference...";
-    }, 400);
-
-    const stageTimer2 = setTimeout(() => {
-      loadingStage.textContent = "Computing local SHAP attributions via TreeExplainer...";
-    }, 800);
-
     try {
-      const response = await fetch("/scan", {
-        method: "POST",
-        body: formData
-      });
-
-      clearTimeout(stageTimer1);
-      clearTimeout(stageTimer2);
-
+      const response = await fetch("/scan", { method: "POST", body: formData });
       if (!response.ok) {
-        let errDetail = "Scan request failed with HTTP " + response.status;
+        let errDetail = `Scan request failed (HTTP ${response.status})`;
         try {
           const errJson = await response.json();
           if (errJson.detail) errDetail = errJson.detail;
         } catch (_) {}
         throw new Error(errDetail);
       }
-
       const scanResult = await response.json();
       displayResult(scanResult);
       addToHistory(scanResult);
-
     } catch (err) {
-      showAlert(err.message || "An unexpected error occurred during document inspection.");
+      showAlert(err.message || "An unexpected error occurred during inspection.");
     } finally {
       loadingOverlay.style.display = "none";
       uploadZone.style.display = "block";
@@ -271,287 +282,383 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // -------------------------------------------------------------------------
-  // 5. Result Rendering
+  // 4. Result Sheet Rendering
   // -------------------------------------------------------------------------
-  function displayResult(res) {
+  function getVerdictMeta(verdict) {
+    if (verdict === "benign") {
+      return {
+        cls: "verdict-benign",
+        text: "BENIGN",
+        icon: `<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>`
+      };
+    }
+    if (verdict === "needs_review") {
+      return {
+        cls: "verdict-review",
+        text: "NEEDS MANUAL REVIEW",
+        icon: `<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>`
+      };
+    }
+    return {
+      cls: "verdict-malicious",
+      text: "LIKELY MALICIOUS",
+      icon: `<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/></svg>`
+    };
+  }
+
+  function displayResult(res, shouldScroll = true) {
     resultSection.style.display = "block";
 
-    // Header Badges
-    badgeFileName.textContent = res.file_name;
-    badgeFileSize.textContent = formatBytes(res.size);
-    badgeScanTime.textContent = `${res.processing_ms} ms`;
+    const vMeta = getVerdictMeta(res.verdict);
+    verdictBadge.className = `verdict-badge ${vMeta.cls}`;
+    verdictIcon.innerHTML = vMeta.icon;
+    verdictText.textContent = vMeta.text;
 
-    // Verdict Badge
-    verdictBadge.className = "verdict-badge";
-    if (res.verdict === "benign") {
-      verdictBadge.classList.add("verdict-benign");
-      verdictText.textContent = "BENIGN";
-      verdictIcon.innerHTML = `<svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>`;
-    } else if (res.verdict === "needs_review") {
-      verdictBadge.classList.add("verdict-review");
-      verdictText.textContent = "NEEDS MANUAL REVIEW";
-      verdictIcon.innerHTML = `<svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>`;
-    } else {
-      verdictBadge.classList.add("verdict-malicious");
-      verdictText.textContent = "LIKELY MALICIOUS";
-      verdictIcon.innerHTML = `<svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/></svg>`;
-    }
-
-    // Probability Primary Display (Biggest number on card)
     const probPct = Math.min(Math.max(res.calibrated_probability * 100.0, 0.0), 100.0);
     resultProbLarge.textContent = `${probPct.toFixed(1)}%`;
 
-    // OOD Warning Banner
+    // Strip redundant OOD notice from reason string in UI (OUT OF RANGE banner handles it)
+    const cleanReason = (res.reason || "").replace(/\s*\[Notice:[^\]]*\]/g, "").trim();
+    resultReason.textContent = cleanReason;
+
     oodBanner.style.display = res.ood_warning ? "flex" : "none";
+    const oodBannerText = document.getElementById("ood-banner-text");
+    if (oodBannerText) {
+      let rangeInfo = " (training files: 358 B to 30.6 MB, 17 to 181,975 extracted strings)";
+      if (modelInfoData && modelInfoData.ood_thresholds) {
+        const ood = modelInfoData.ood_thresholds;
+        rangeInfo = ` (training files: ${formatBytes(ood.size_p05)} to ${formatBytes(ood.size_p995)}, ${Math.round(ood.numstrings_p05)} to ${Math.round(ood.numstrings_p995).toLocaleString()} extracted strings)`;
+      }
+      oodBannerText.textContent = `This file's size or text content is outside the range of the files the model was trained on${rangeInfo}. Treat the score with extra caution.`;
+    }
 
-    // Plain-Language Reason
-    resultReason.textContent = res.reason;
-
-    // Evidence Note (/URI Dependence Note)
     if (res.evidence_note) {
       evidenceNote.textContent = res.evidence_note;
-      evidenceNote.style.display = "block";
+      evidenceNote.style.display = "flex";
     } else {
       evidenceNote.style.display = "none";
       evidenceNote.textContent = "";
     }
 
-    // Probability Gauge
     gaugeRiskVal.textContent = `${probPct.toFixed(1)}%`;
     gaugeNeedle.style.left = `${probPct}%`;
-    gaugeNeedleBubble.textContent = `${probPct.toFixed(1)}%`;
+    gaugeNeedleBubble.textContent = `Needle: ${probPct.toFixed(1)}%`;
 
-    // File Details Grid
     detailFilename.textContent = res.file_name;
     detailFilesize.textContent = `${res.size.toLocaleString()} bytes (${formatBytes(res.size)})`;
     detailSha256.textContent = res.sha256;
-    detailRawProb.textContent = `${(res.raw_probability * 100.0).toFixed(2)}% (raw probability: ${res.raw_probability.toFixed(4)})`;
-    detailTiming.textContent = `${res.processing_ms} ms (end-to-end extraction & SHAP)`;
+    detailRawProb.textContent = `${(res.raw_probability * 100.0).toFixed(2)}% (raw: ${res.raw_probability.toFixed(4)})`;
+    detailTiming.textContent = `${res.processing_ms} ms (static extraction & SHAP)`;
 
-    // Render Charts
     renderShapChart(res.top_contributors);
     renderFamilyChart(res.family_summary);
 
-    // Smooth scroll to results
-    resultSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (shouldScroll) {
+      resultSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }
 
-  // Copy hash button
-  btnCopyHash.addEventListener("click", () => {
+  btnCopyHash.addEventListener("click", async () => {
     const text = detailSha256.textContent;
-    if (text && text !== "-") {
-      navigator.clipboard.writeText(text).then(() => {
-        btnCopyHash.textContent = "Copied!";
-        setTimeout(() => { btnCopyHash.textContent = "Copy"; }, 2000);
-      });
+    if (!text || text === "-") return;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        throw new Error("Clipboard API unavailable");
+      }
+      btnCopyHash.textContent = "Copied!";
+    } catch (_) {
+      btnCopyHash.textContent = "Copy failed";
     }
+    setTimeout(() => { btnCopyHash.textContent = "Copy"; }, 2000);
   });
 
   // -------------------------------------------------------------------------
-  // 6. SVG Charts (Diverging SHAP & Feature Family)
-  // Non-overlapping numeric labels outside bar ends, wrapping labels & tooltips
+  // 5. Full-Width Diverging SVG Charts + Visually Hidden Accessible Tables
   // -------------------------------------------------------------------------
+  function wrapTwoLines(text, maxChars) {
+    if (text.length <= maxChars) return [text];
+    const words = text.split(" ");
+    let l1 = "";
+    let l2 = "";
+    for (const w of words) {
+      if ((l1 + " " + w).trim().length <= maxChars) {
+        l1 = (l1 + " " + w).trim();
+      } else {
+        l2 = (l2 + " " + w).trim();
+      }
+    }
+    return l1 && l2 ? [l1, l2] : [text];
+  }
+
   function renderShapChart(contributors) {
+    lastContributors = contributors;
     if (!contributors || contributors.length === 0) {
       shapChartContainer.innerHTML = "<p>No attribution data available.</p>";
+      shapTableSr.innerHTML = "";
       return;
     }
 
-    // Top 8 sorted by absolute impact
     const items = contributors.slice(0, 8);
     const maxVal = Math.max(...items.map(d => Math.abs(d.shap_value)), 0.5);
+    const isMobile = window.innerWidth < 640;
 
-    const width = 720;
-    const height = 350;
-    const margin = { top: 25, right: 65, bottom: 25, left: 260 };
-    const chartWidth = width - margin.left - margin.right; // 395px
-    const chartHeight = height - margin.top - margin.bottom;
-    const rowHeight = chartHeight / items.length;
-    const zeroX = margin.left + chartWidth / 2; // 457.5px
+    let svg = "";
+    let srRows = "";
 
-    // Max bar half-width leaves 45px padding before chart edge so labels never collide
-    const usableHalfWidth = (chartWidth / 2) - 45;
+    if (isMobile) {
+      const width = 340;
+      const rowHeight = 62;
+      const margin = { top: 32, right: 12, bottom: 14, left: 12 };
+      const height = margin.top + items.length * rowHeight + margin.bottom;
+      const zeroX = width / 2;
+      const usableHalf = (width / 2) - 66; // room for value label at end of bar inside 340px
 
-    let svgHtml = `
-      <svg viewBox="0 0 ${width} ${height}" style="width: 100%; height: 100%; font-family: inherit; font-size: 11px;">
-        <!-- Center Axis -->
-        <line x1="${zeroX}" y1="${margin.top}" x2="${zeroX}" y2="${height - margin.bottom}" stroke="var(--border-color)" stroke-width="1.5" stroke-dasharray="3,3" />
-        <text x="${zeroX - 10}" y="${margin.top - 8}" text-anchor="end" fill="var(--color-benign-text)" font-weight="700">Toward Benign (&minus;)</text>
-        <text x="${zeroX + 10}" y="${margin.top - 8}" text-anchor="start" fill="var(--color-malicious-text)" font-weight="700">Toward Malicious (+)</text>
-    `;
-
-    items.forEach((d, i) => {
-      const y = margin.top + i * rowHeight + rowHeight / 2;
-      const barHalfWidth = Math.min((Math.abs(d.shap_value) / maxVal) * usableHalfWidth, usableHalfWidth);
-      const isMalicious = d.shap_value > 0;
-      const barX = isMalicious ? zeroX : zeroX - barHalfWidth;
-      const color = isMalicious ? "var(--color-malicious)" : "var(--color-benign)";
-
-      // Wrap long names onto two lines if needed (>26 characters)
-      const name = d.readable_name;
-      let labelLines = [name];
-      if (name.length > 26) {
-        const words = name.split(" ");
-        let line1 = "";
-        let line2 = "";
-        for (const w of words) {
-          if ((line1 + " " + w).trim().length <= 24) {
-            line1 = (line1 + " " + w).trim();
-          } else {
-            line2 = (line2 + " " + w).trim();
-          }
-        }
-        if (line1 && line2) {
-          labelLines = [line1, line2];
-        }
-      }
-
-      // Feature Label SVG
-      let textTspans = "";
-      if (labelLines.length === 2) {
-        textTspans = `
-          <tspan x="${margin.left - 15}" dy="-0.45em">${labelLines[0]}</tspan>
-          <tspan x="${margin.left - 15}" dy="1.15em">${labelLines[1]}</tspan>
-        `;
-      } else {
-        textTspans = `<tspan x="${margin.left - 15}" dy="0.35em">${labelLines[0]}</tspan>`;
-      }
-
-      // Numeric Value Placement: outside the bar end away from the label column
-      const valX = isMalicious ? (barX + barHalfWidth + 8) : (barX - 8);
-      const valAnchor = isMalicious ? "start" : "end";
-
-      svgHtml += `
-        <!-- Feature Label with full tooltip & keyboard focusable group -->
-        <g tabindex="0" role="group" aria-label="${name}">
-          <title>${name} (${d.feature})</title>
-          <text class="chart-label-text" x="${margin.left - 15}" y="${y}" text-anchor="end">
-            ${textTspans}
-          </text>
-        </g>
-        <!-- Horizontal Bar -->
-        <rect x="${barX}" y="${y - 8}" width="${Math.max(barHalfWidth, 2)}" height="16" rx="3" fill="${color}" opacity="0.9">
-          <title>${name}: ${d.shap_value > 0 ? "+" : ""}${d.shap_value.toFixed(4)}</title>
-        </rect>
-        <!-- Numeric Value Label (outside bar end with padding) -->
-        <text class="chart-value-text" x="${valX}" y="${y + 4}" text-anchor="${valAnchor}">
-          ${d.shap_value > 0 ? "+" : ""}${d.shap_value.toFixed(3)}
-        </text>
+      svg = `
+        <svg viewBox="0 0 ${width} ${height}" style="width: 100%; height: auto;" role="img" aria-label="Diverging bar chart of top 8 contributing features">
+          <text class="chart-svg-axis-label" x="${zeroX - 6}" y="18" text-anchor="end" fill="var(--verdict-benign)" style="font-size:11px;">&larr; benign</text>
+          <text class="chart-svg-axis-label" x="${zeroX + 6}" y="18" text-anchor="start" fill="var(--verdict-malicious)" style="font-size:11px;">malicious &rarr;</text>
+          <line x1="${zeroX}" y1="${margin.top}" x2="${zeroX}" y2="${height - margin.bottom}" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="4,4" />
       `;
-    });
 
-    svgHtml += `</svg>`;
-    shapChartContainer.innerHTML = svgHtml;
+      items.forEach((d, i) => {
+        const rowTop = margin.top + i * rowHeight;
+        const barW = Math.max(Math.min((Math.abs(d.shap_value) / maxVal) * usableHalf, usableHalf), 6);
+        const isMal = d.shap_value > 0;
+        const barX = isMal ? zeroX : zeroX - barW;
+        const barY = rowTop + 28;
+        const color = isMal ? "var(--verdict-malicious)" : "var(--verdict-benign)";
+        const valX = isMal ? (barX + barW + 6) : (barX - 6);
+        const valAnchor = isMal ? "start" : "end";
+        const valText = `${isMal ? "+" : ""}${d.shap_value.toFixed(3)}`;
+        const tipText = d.note ? `${d.readable_name} (${d.note})` : `${d.readable_name} (${d.feature})`;
+
+        const lines = wrapTwoLines(d.readable_name, 38);
+        const tspans = lines.length === 2
+          ? `<tspan x="${margin.left}" dy="0">${lines[0]}</tspan><tspan x="${margin.left}" dy="1.15em">${lines[1]}</tspan>`
+          : `<tspan x="${margin.left}" dy="0">${lines[0]}</tspan>`;
+
+        svg += `
+          <g class="chart-row" tabindex="0" aria-label="${tipText}: ${valText}">
+            <title>${tipText}: ${valText}</title>
+            <text class="chart-svg-label" x="${margin.left}" y="${rowTop + 12}" text-anchor="start" style="font-size:11.5px;">${tspans}</text>
+            <rect class="chart-bar" x="${barX}" y="${barY}" width="${barW}" height="16" rx="3" fill="${color}" />
+            <text class="chart-svg-value" x="${valX}" y="${barY + 12}" text-anchor="${valAnchor}" style="font-size:11.5px;">${valText}</text>
+          </g>
+        `;
+        srRows += `<tr><td>${d.readable_name}</td><td>${valText}</td><td>${d.direction}</td></tr>`;
+      });
+    } else {
+      const width = 920;
+      const rowHeight = 46;
+      const margin = { top: 34, right: 90, bottom: 20, left: 320 };
+      const height = margin.top + items.length * rowHeight + margin.bottom;
+      const chartWidth = width - margin.left - margin.right;
+      const zeroX = margin.left + chartWidth / 2;
+      const usableHalf = (chartWidth / 2) - 70;
+
+      svg = `
+        <svg viewBox="0 0 ${width} ${height}" style="width: 100%; min-width: 680px; height: auto;" role="img" aria-label="Diverging bar chart of top 8 contributing features">
+          <line x1="${zeroX}" y1="${margin.top}" x2="${zeroX}" y2="${height - margin.bottom}" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="4,4" />
+          <text class="chart-svg-axis-label" x="${zeroX - 10}" y="20" text-anchor="end" fill="var(--verdict-benign)">&larr; pushes toward benign</text>
+          <text class="chart-svg-axis-label" x="${zeroX + 10}" y="20" text-anchor="start" fill="var(--verdict-malicious)">pushes toward malicious &rarr;</text>
+      `;
+
+      items.forEach((d, i) => {
+        const y = margin.top + i * rowHeight + rowHeight / 2;
+        const barW = Math.max(Math.min((Math.abs(d.shap_value) / maxVal) * usableHalf, usableHalf), 6);
+        const isMal = d.shap_value > 0;
+        const barX = isMal ? zeroX : zeroX - barW;
+        const color = isMal ? "var(--verdict-malicious)" : "var(--verdict-benign)";
+        const valX = isMal ? (barX + barW + 10) : (barX - 10);
+        const valAnchor = isMal ? "start" : "end";
+        const valText = `${isMal ? "+" : ""}${d.shap_value.toFixed(3)}`;
+
+        const lines = wrapTwoLines(d.readable_name, 30);
+        const tspans = lines.length === 2
+          ? `<tspan x="${margin.left - 16}" dy="-0.4em">${lines[0]}</tspan><tspan x="${margin.left - 16}" dy="1.2em">${lines[1]}</tspan>`
+          : `<tspan x="${margin.left - 16}" dy="0.35em">${lines[0]}</tspan>`;
+
+        const tipText = d.note ? `${d.readable_name} (${d.note})` : `${d.readable_name} (${d.feature})`;
+
+        svg += `
+          <g class="chart-row" tabindex="0" aria-label="${tipText}: ${valText}">
+            <title>${tipText}: ${valText}</title>
+            <text class="chart-svg-label" x="${margin.left - 16}" y="${y}" text-anchor="end">${tspans}</text>
+            <rect class="chart-bar" x="${barX}" y="${y - 10}" width="${barW}" height="20" rx="3" fill="${color}" />
+            <text class="chart-svg-value" x="${valX}" y="${y + 5}" text-anchor="${valAnchor}">${valText}</text>
+          </g>
+        `;
+        srRows += `<tr><td>${d.readable_name}</td><td>${valText}</td><td>${d.direction}</td></tr>`;
+      });
+    }
+
+    svg += `</svg>`;
+    shapChartContainer.innerHTML = svg;
+    shapTableSr.innerHTML = `<table><caption>Top 8 SHAP Contributors</caption><thead><tr><th>Feature</th><th>SHAP</th><th>Direction</th></tr></thead><tbody>${srRows}</tbody></table>`;
   }
 
   function renderFamilyChart(familySummary) {
+    lastFamilySummary = familySummary;
     if (!familySummary || Object.keys(familySummary).length === 0) {
       familyChartContainer.innerHTML = "<p>No family summary available.</p>";
+      familyTableSr.innerHTML = "";
       return;
     }
 
-    const families = Object.entries(familySummary);
-    families.sort((a, b) => Math.abs(b[1].net_attribution) - Math.abs(a[1].net_attribution));
-
+    const families = Object.entries(familySummary).sort((a, b) => Math.abs(b[1].net_attribution) - Math.abs(a[1].net_attribution));
     const maxVal = Math.max(...families.map(f => Math.abs(f[1].net_attribution)), 0.3);
-    const width = 560;
-    const height = 350;
-    const margin = { top: 25, right: 60, bottom: 25, left: 200 };
-    const chartWidth = width - margin.left - margin.right;
-    const chartHeight = height - margin.top - margin.bottom;
-    const rowHeight = chartHeight / families.length;
-    const zeroX = margin.left + chartWidth / 2;
-    const usableHalfWidth = (chartWidth / 2) - 40;
+    const isMobile = window.innerWidth < 640;
 
-    let svgHtml = `
-      <svg viewBox="0 0 ${width} ${height}" style="width: 100%; height: 100%; font-family: inherit; font-size: 11px;">
-        <!-- Center Axis -->
-        <line x1="${zeroX}" y1="${margin.top}" x2="${zeroX}" y2="${height - margin.bottom}" stroke="var(--border-color)" stroke-width="1.5" stroke-dasharray="3,3" />
-        <text x="${zeroX - 8}" y="${margin.top - 8}" text-anchor="end" fill="var(--color-benign-text)" font-weight="700">Benign (&minus;)</text>
-        <text x="${zeroX + 8}" y="${margin.top - 8}" text-anchor="start" fill="var(--color-malicious-text)" font-weight="700">Malicious (+)</text>
-    `;
+    let svg = "";
+    let srRows = "";
 
-    families.forEach(([famName, stats], i) => {
-      const y = margin.top + i * rowHeight + rowHeight / 2;
-      const net = stats.net_attribution;
-      const barHalfWidth = Math.min((Math.abs(net) / maxVal) * usableHalfWidth, usableHalfWidth);
-      const isMalicious = net > 0;
-      const barX = isMalicious ? zeroX : zeroX - barHalfWidth;
-      const color = isMalicious ? "var(--color-malicious)" : "var(--color-benign)";
+    if (isMobile) {
+      const width = 340;
+      const rowHeight = 52;
+      const margin = { top: 32, right: 12, bottom: 14, left: 12 };
+      const height = margin.top + families.length * rowHeight + margin.bottom;
+      const zeroX = width / 2;
+      const usableHalf = (width / 2) - 66;
 
-      const valX = isMalicious ? (barX + barHalfWidth + 8) : (barX - 8);
-      const valAnchor = isMalicious ? "start" : "end";
-
-      svgHtml += `
-        <!-- Family Label -->
-        <g tabindex="0" role="group" aria-label="${famName}">
-          <title>${famName}: Net ${net > 0 ? "+" : ""}${net.toFixed(3)} (Pos: +${stats.positive_attribution.toFixed(3)}, Neg: ${stats.negative_attribution.toFixed(3)})</title>
-          <text class="chart-label-text" x="${margin.left - 15}" y="${y + 4}" text-anchor="end">
-            ${famName}
-          </text>
-        </g>
-        <!-- Bar -->
-        <rect x="${barX}" y="${y - 8}" width="${Math.max(barHalfWidth, 2)}" height="16" rx="3" fill="${color}" opacity="0.9">
-          <title>${famName}: Net ${net > 0 ? "+" : ""}${net.toFixed(3)}</title>
-        </rect>
-        <!-- Value Label -->
-        <text class="chart-value-text" x="${valX}" y="${y + 4}" text-anchor="${valAnchor}">
-          ${net > 0 ? "+" : ""}${net.toFixed(2)}
-        </text>
+      svg = `
+        <svg viewBox="0 0 ${width} ${height}" style="width: 100%; height: auto;" role="img" aria-label="Diverging bar chart of feature family net attributions">
+          <text class="chart-svg-axis-label" x="${zeroX - 6}" y="18" text-anchor="end" fill="var(--verdict-benign)" style="font-size:11px;">&larr; benign</text>
+          <text class="chart-svg-axis-label" x="${zeroX + 6}" y="18" text-anchor="start" fill="var(--verdict-malicious)" style="font-size:11px;">malicious &rarr;</text>
+          <line x1="${zeroX}" y1="${margin.top}" x2="${zeroX}" y2="${height - margin.bottom}" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="4,4" />
       `;
-    });
 
-    svgHtml += `</svg>`;
-    familyChartContainer.innerHTML = svgHtml;
+      families.forEach(([famName, stats], i) => {
+        const rowTop = margin.top + i * rowHeight;
+        const net = stats.net_attribution;
+        const barW = Math.max(Math.min((Math.abs(net) / maxVal) * usableHalf, usableHalf), 6);
+        const isMal = net > 0;
+        const barX = isMal ? zeroX : zeroX - barW;
+        const barY = rowTop + 20;
+        const color = isMal ? "var(--verdict-malicious)" : "var(--verdict-benign)";
+        const valX = isMal ? (barX + barW + 6) : (barX - 6);
+        const valAnchor = isMal ? "start" : "end";
+        const valText = `${isMal ? "+" : ""}${net.toFixed(2)}`;
+
+        svg += `
+          <g class="chart-row" tabindex="0" aria-label="${famName}: ${valText}">
+            <title>${famName}: Net ${valText}</title>
+            <text class="chart-svg-label" x="${margin.left}" y="${rowTop + 12}" text-anchor="start" style="font-size:11.5px;">${famName}</text>
+            <rect class="chart-bar" x="${barX}" y="${barY}" width="${barW}" height="16" rx="3" fill="${color}" />
+            <text class="chart-svg-value" x="${valX}" y="${barY + 12}" text-anchor="${valAnchor}" style="font-size:11.5px;">${valText}</text>
+          </g>
+        `;
+        srRows += `<tr><td>${famName}</td><td>${valText}</td></tr>`;
+      });
+    } else {
+      const width = 920;
+      const rowHeight = 42;
+      const margin = { top: 34, right: 90, bottom: 20, left: 320 };
+      const height = margin.top + families.length * rowHeight + margin.bottom;
+      const chartWidth = width - margin.left - margin.right;
+      const zeroX = margin.left + chartWidth / 2;
+      const usableHalf = (chartWidth / 2) - 70;
+
+      svg = `
+        <svg viewBox="0 0 ${width} ${height}" style="width: 100%; min-width: 680px; height: auto;" role="img" aria-label="Diverging bar chart of feature family net attributions">
+          <line x1="${zeroX}" y1="${margin.top}" x2="${zeroX}" y2="${height - margin.bottom}" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="4,4" />
+          <text class="chart-svg-axis-label" x="${zeroX - 10}" y="20" text-anchor="end" fill="var(--verdict-benign)">&larr; pushes toward benign</text>
+          <text class="chart-svg-axis-label" x="${zeroX + 10}" y="20" text-anchor="start" fill="var(--verdict-malicious)">pushes toward malicious &rarr;</text>
+      `;
+
+      families.forEach(([famName, stats], i) => {
+        const y = margin.top + i * rowHeight + rowHeight / 2;
+        const net = stats.net_attribution;
+        const barW = Math.max(Math.min((Math.abs(net) / maxVal) * usableHalf, usableHalf), 6);
+        const isMal = net > 0;
+        const barX = isMal ? zeroX : zeroX - barW;
+        const color = isMal ? "var(--verdict-malicious)" : "var(--verdict-benign)";
+        const valX = isMal ? (barX + barW + 10) : (barX - 10);
+        const valAnchor = isMal ? "start" : "end";
+        const valText = `${isMal ? "+" : ""}${net.toFixed(2)}`;
+
+        svg += `
+          <g class="chart-row" tabindex="0" aria-label="${famName}: ${valText}">
+            <title>${famName}: Net ${valText}</title>
+            <text class="chart-svg-label" x="${margin.left - 16}" y="${y + 5}" text-anchor="end">${famName}</text>
+            <rect class="chart-bar" x="${barX}" y="${y - 10}" width="${barW}" height="20" rx="3" fill="${color}" />
+            <text class="chart-svg-value" x="${valX}" y="${y + 5}" text-anchor="${valAnchor}">${valText}</text>
+          </g>
+        `;
+        srRows += `<tr><td>${famName}</td><td>${valText}</td></tr>`;
+      });
+    }
+
+    svg += `</svg>`;
+    familyChartContainer.innerHTML = svg;
+    familyTableSr.innerHTML = `<table><caption>Feature Family Net Attribution</caption><thead><tr><th>Family</th><th>Net SHAP</th></tr></thead><tbody>${srRows}</tbody></table>`;
   }
 
+  let resizeTimer = null;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const nowMobile = window.innerWidth < 640;
+      if (nowMobile !== lastIsMobile) {
+        lastIsMobile = nowMobile;
+        if (lastContributors) renderShapChart(lastContributors);
+        if (lastFamilySummary) renderFamilyChart(lastFamilySummary);
+      }
+    }, 100);
+  });
+
   // -------------------------------------------------------------------------
-  // 7. Session History Management
+  // 6. Session History (Clickable rows reload report sheet)
   // -------------------------------------------------------------------------
   function addToHistory(scanResult) {
     sessionScans.unshift({
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-      ...scanResult
+      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
+      result: scanResult
     });
     renderHistory();
   }
 
   function renderHistory() {
     if (sessionScans.length === 0) {
-      historyTableBody.innerHTML = `
-        <tr>
-          <td colspan="7" class="empty-history">No files scanned in this session yet. Upload a PDF above to begin.</td>
-        </tr>
-      `;
+      historyEmpty.style.display = "block";
+      historyTableWrap.style.display = "none";
+      historyTableBody.innerHTML = "";
       return;
     }
 
-    let rowsHtml = "";
-    sessionScans.forEach((s) => {
-      let verdictClass = "verdict-benign";
-      let verdictLabel = "BENIGN";
-      if (s.verdict === "needs_review") {
-        verdictClass = "verdict-review";
-        verdictLabel = "REVIEW";
-      } else if (s.verdict === "malicious") {
-        verdictClass = "verdict-malicious";
-        verdictLabel = "MALICIOUS";
-      }
+    historyEmpty.style.display = "none";
+    historyTableWrap.style.display = "block";
 
-      rowsHtml += `
-        <tr>
-          <td>${s.time}</td>
-          <td><strong>${s.file_name}</strong></td>
-          <td>${formatBytes(s.size)}</td>
-          <td><span class="meta-badge ${verdictClass}" style="font-weight: 700; padding: 0.2rem 0.5rem;">${verdictLabel}</span></td>
-          <td style="font-variant-numeric: tabular-nums;">${(s.calibrated_probability * 100).toFixed(1)}%</td>
-          <td>${s.ood_warning ? '<span style="color: var(--color-ood); font-weight: 700;">WARNING</span>' : '<span style="color: var(--text-muted);">Normal</span>'}</td>
-          <td>${s.processing_ms} ms</td>
-        </tr>
+    historyTableBody.innerHTML = "";
+    sessionScans.forEach((entry) => {
+      const s = entry.result;
+      const vMeta = getVerdictMeta(s.verdict);
+      const tr = document.createElement("tr");
+      tr.className = "history-row";
+      tr.tabIndex = 0;
+      tr.setAttribute("aria-label", `Reload scan result for ${s.file_name}`);
+
+      tr.innerHTML = `
+        <td>${entry.time}</td>
+        <td><strong>${s.file_name}</strong></td>
+        <td>${formatBytes(s.size)}</td>
+        <td><span class="verdict-pill ${vMeta.cls}">${vMeta.icon} ${vMeta.text}</span></td>
+        <td>${(s.calibrated_probability * 100).toFixed(1)}%</td>
+        <td>${s.ood_warning ? "OUT OF RANGE" : "Normal"}</td>
+        <td>${s.processing_ms} ms</td>
       `;
-    });
 
-    historyTableBody.innerHTML = rowsHtml;
+      const reloadFn = () => displayResult(s, true);
+      tr.addEventListener("click", reloadFn);
+      tr.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          reloadFn();
+        }
+      });
+      historyTableBody.appendChild(tr);
+    });
   }
 
   btnClearHistory.addEventListener("click", () => {
@@ -563,17 +670,15 @@ document.addEventListener("DOMContentLoaded", () => {
   initTheme();
   fetchModelInfo();
 
-  // Check URL query parameters for automated verification & demo screenshots
+  // Automated screenshot / demo query parameter handling
   const urlParams = new URLSearchParams(window.location.search);
   const demoTheme = urlParams.get("theme");
   const demoMode = urlParams.get("demo");
-  if (demoTheme) {
-    setTheme(demoTheme);
-  }
+  if (demoTheme) setTheme(demoTheme);
   if (demoMode) {
     fetch(`/demo-scan/${demoMode}`)
       .then(res => res.json())
-      .then(data => displayResult(data))
-      .catch(err => console.error("Automated demo load failed:", err));
+      .then(data => displayResult(data, false))
+      .catch(err => console.error("Demo load failed:", err));
   }
 });

@@ -12,40 +12,62 @@ def contrast(c1, c2):
     return (max(l1, l2) + 0.05) / (min(l1, l2) + 0.05)
 
 themes = {
-    'Dark Theme (#141414 bg, #1D1D1D card)': {
+    'Light Theme (Paper #F1EFE6, Card #FBFAF5, Inset #E8E5DA, Border #7B7668)': {
         'pairs': [
-            ('Primary Body Text', '#ECECEC', '#1D1D1D', 4.5),
-            ('Muted Text', '#A0A0A0', '#1D1D1D', 4.5),
-            ('Benign Verdict Text', '#3FA66B', '#1D1D1D', 4.5),
-            ('Review Verdict Text', '#D9A441', '#1D1D1D', 4.5),
-            ('Malicious Verdict Text', '#E55B57', '#1D1D1D', 4.5),
-            ('Focus Ring vs Card', '#E0A030', '#1D1D1D', 3.0),
-            ('Focus Ring vs Page', '#E0A030', '#141414', 3.0),
-            ('Button Text vs Button Bg', '#ECECEC', '#262626', 4.5),
+            # Text >= 4.5:1
+            ('Ink on Paper (Text)', '#141412', '#F1EFE6', 4.5),
+            ('Ink on Card (Text)', '#141412', '#FBFAF5', 4.5),
+            ('Ink on Inset (Text)', '#141412', '#E8E5DA', 4.5),
+            ('Ink on Mint / Peach (Text)', '#141412', '#D4F3C9', 4.5),
+            ('Muted Ink on Inset (Text)', '#5F5C52', '#E8E5DA', 4.5),
+            ('Benign Verdict on Tint (Text)', '#1F7A45', '#E6F5EC', 4.5),
+            ('Review Verdict on Tint (Text)', '#8A5600', '#FDF4E3', 4.5),
+            ('Malicious Verdict on Tint (Text)', '#C0392B', '#FCECEB', 4.5),
+            # UI Components >= 3.0:1
+            ('Focus Ring Ink on Paper (UI)', '#141412', '#F1EFE6', 3.0),
+            ('Border #7B7668 on Card #FBFAF5 (UI)', '#7B7668', '#FBFAF5', 3.0),
+            ('Border #7B7668 on Inset #E8E5DA (UI)', '#7B7668', '#E8E5DA', 3.0),
+            ('Gauge Zone Divider Ink on Tint (UI)', '#141412', '#E6F5EC', 3.0),
+            ('Chart Bar Benign on Inset (UI)', '#1F7A45', '#E8E5DA', 3.0),
+            ('Chart Bar Malicious on Inset (UI)', '#C0392B', '#E8E5DA', 3.0),
         ]
     },
-    'Light Theme (#F7F5F2 bg, #FFFFFF card)': {
+    'Dark Theme (Ground #10100E, Card #1C1C19, Inset #272723, Border #737167)': {
         'pairs': [
-            ('Primary Body Text', '#1B1B1A', '#FFFFFF', 4.5),
-            ('Muted Text', '#6B6862', '#FFFFFF', 4.5),
-            ('Benign Verdict Text', '#267A46', '#FFFFFF', 4.5),
-            ('Review Verdict Text', '#8A6008', '#FFFFFF', 4.5),
-            ('Malicious Verdict Text', '#B32D29', '#FFFFFF', 4.5),
-            ('Focus Ring vs Card', '#1B1B1A', '#FFFFFF', 3.0),
-            ('Focus Ring vs Page', '#1B1B1A', '#F7F5F2', 3.0),
-            ('Button Text vs Button Bg', '#1B1B1A', '#EDE9E3', 4.5),
+            # Text >= 4.5:1
+            ('Ink on Ground (Text)', '#F1EFE6', '#10100E', 4.5),
+            ('Ink on Card (Text)', '#F1EFE6', '#1C1C19', 4.5),
+            ('Ink on Inset (Text)', '#F1EFE6', '#272723', 4.5),
+            ('Muted Ink on Inset (Text)', '#A8A498', '#272723', 4.5),
+            ('Benign Verdict on Tint (Text)', '#49B675', '#193222', 4.5),
+            ('Review Verdict on Tint (Text)', '#E0A030', '#332712', 4.5),
+            ('Malicious Verdict on Tint (Text)', '#E8685C', '#381D1A', 4.5),
+            # UI Components >= 3.0:1
+            ('Focus Ring Ink on Ground (UI)', '#F1EFE6', '#10100E', 3.0),
+            ('Border #737167 on Card #1C1C19 (UI)', '#737167', '#1C1C19', 3.0),
+            ('Border #737167 on Inset #272723 (UI)', '#737167', '#272723', 3.0),
+            ('Gauge Zone Divider Ink on Tint (UI)', '#F1EFE6', '#193222', 3.0),
+            ('Chart Bar Benign on Inset (UI)', '#49B675', '#272723', 3.0),
+            ('Chart Bar Malicious on Inset (UI)', '#E8685C', '#272723', 3.0),
         ]
     }
 }
 
+all_ok = True
 for t_name, t_data in themes.items():
-    print('=' * 80)
+    print('=' * 90)
     print(t_name)
-    print('=' * 80)
-    print(f"{'Element / Role':<32} {'Color 1':<10} {'Color 2':<10} {'Ratio':<10} {'Req':<8} {'Status'}")
-    print('-' * 80)
+    print('=' * 90)
+    print(f"{'Element / Role':<40} {'Color 1':<10} {'Color 2':<10} {'Ratio':<10} {'Req':<8} {'Status'}")
+    print('-' * 90)
     for role, c1, c2, target in t_data['pairs']:
         cr = contrast(c1, c2)
-        passed = 'PASS (>= req)' if cr >= target else 'FAIL'
-        print(f"{role:<32} {c1:<10} {c2:<10} {cr:.2f}:1    {target:.1f}:1    {passed}")
+        passed = cr >= target
+        if not passed:
+            all_ok = False
+        status = 'PASS' if passed else 'FAIL'
+        print(f"{role:<40} {c1:<10} {c2:<10} {cr:.2f}:1    {target:.1f}:1    {status}")
     print()
+
+assert all_ok, 'Contrast check failed!'
+print('ALL CONTRAST CHECKS PASSED!')

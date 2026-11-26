@@ -61,6 +61,12 @@ class TestDocSentryAPI(unittest.TestCase):
         self.assertIn("limitations", data)
         self.assertIsInstance(data["limitations"], list)
         self.assertGreater(len(data["limitations"]), 3)
+        self.assertIn("error_counts", data)
+        for split in ("test", "validation"):
+            self.assertIn(split, data["error_counts"])
+            for field in ("total", "inside_band", "outside_band"):
+                self.assertIn(field, data["error_counts"][split])
+                self.assertIsInstance(data["error_counts"][split][field], int)
 
     def test_valid_benign_pdf_and_schema(self):
         """Uploads a valid benign PDF and checks complete response schema."""
