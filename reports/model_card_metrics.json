@@ -1,0 +1,43 @@
+{
+  "bootstrap_95ci": {
+    "f1": "0.9452 [0.9410, 0.9494]",
+    "recall": "0.9043 [0.8971, 0.9116]",
+    "fpr": "0.0092 [0.0070, 0.0115]",
+    "roc_auc": "0.9887 [0.9870, 0.9904]"
+  },
+  "error_counts_at_0_4083": {
+    "validation": {
+      "total": 151,
+      "inside_band": 62,
+      "inside_pct": 41.06,
+      "outside_band": 89,
+      "outside_pct": 58.94,
+      "fp_outside": 37,
+      "fn_outside": 52
+    },
+    "test": {
+      "total": 554,
+      "inside_band": 235,
+      "inside_pct": 42.42,
+      "outside_band": 319,
+      "outside_pct": 57.58,
+      "fp_outside": 102,
+      "fn_outside": 217
+    }
+  },
+  "shap_family_shares_pct": {
+    "Regex Indicators": 38.26,
+    "Printable Characters": 25.17,
+    "Byte Histogram": 21.22,
+    "String Metadata": 8.32,
+    "Byte-Entropy Histogram": 4.65,
+    "General Info": 2.38
+  },
+  "ood_test_summary": {
+    "warned_count": 43,
+    "total_test": 12000,
+    "warned_pct": 0.36,
+    "warned_accuracy_pct": 95.35,
+    "unwarned_accuracy_pct": 95.38
+  }
+}
