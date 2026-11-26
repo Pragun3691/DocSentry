@@ -1,0 +1,16 @@
+alias,group,size_pct_rank,numstrings_pct_rank,uri_pct_rank,entropy_pct_rank,calibrated_probability,verdict
+synthetic_a_minimal_blank.pdf,synthetic,0.0,4.27,82.84,0.24,0.4082,needs_review
+synthetic_b_one_page_text.pdf,synthetic,4.28,4.29,82.84,0.38,0.9808,malicious
+synthetic_c_20_page_report.pdf,synthetic,4.5,4.83,82.84,0.23,0.7826,malicious
+synthetic_d_25_uris.pdf,synthetic,4.8,5.73,96.1,0.65,0.9877,malicious
+synthetic_e_embedded_js.pdf,synthetic,4.28,4.29,82.84,0.42,0.9953,malicious
+synthetic_f_large_5mb.pdf,synthetic,87.99,98.41,82.84,0.26,0.4082,needs_review
+user_pdf_1.pdf,user_anonymised,23.37,19.85,82.84,79.0,0.0101,benign
+user_pdf_2.pdf,user_anonymised,59.24,55.31,82.84,35.54,0.0074,benign
+user_pdf_3.pdf,user_anonymised,53.02,69.96,92.46,11.24,0.2984,needs_review
+user_pdf_4.pdf,user_anonymised,74.29,73.66,82.84,39.06,0.0017,benign
+user_pdf_5.pdf,user_anonymised,19.47,28.53,82.84,61.15,0.122,benign
+user_pdf_6.pdf,user_anonymised,45.84,42.72,82.84,91.53,0.0041,benign
+user_pdf_7.pdf,user_anonymised,9.2,15.22,88.29,47.44,0.122,benign
+user_pdf_8.pdf,user_anonymised,10.87,18.5,89.46,11.93,0.4082,needs_review
+user_pdf_9.pdf,user_anonymised,9.39,15.1,82.84,49.03,0.0258,benign

@@ -1,0 +1,450 @@
+{
+  "baseline_test_errors": 554,
+  "baseline_mal_uri0_cal_recall": 0.7132,
+  "counterfactuals": [
+    {
+      "experiment": "A2_remove_links_uri_0",
+      "uri_value": 0,
+      "mal_mean_cal_p_before": 0.9261,
+      "mal_mean_cal_p_after": 0.6728,
+      "ben_mean_cal_p_before": 0.0364,
+      "ben_mean_cal_p_after": 0.0219,
+      "recall_before": 0.9273,
+      "recall_after": 0.6345,
+      "recall_delta_ci95": [
+        -0.3051,
+        -0.2813
+      ],
+      "fpr_before": 0.0197,
+      "fpr_after": 0.0082,
+      "fpr_delta_ci95": [
+        -0.014,
+        -0.009
+      ],
+      "review_rate_before": 0.0377,
+      "review_rate_after": 0.1602,
+      "transition_all": {
+        "benign": {
+          "benign": 5906,
+          "needs_review": 166,
+          "malicious": 238
+        },
+        "needs_review": {
+          "benign": 0,
+          "needs_review": 286,
+          "malicious": 1636
+        },
+        "malicious": {
+          "benign": 0,
+          "needs_review": 0,
+          "malicious": 3768
+        }
+      },
+      "transition_malicious": {
+        "benign": {
+          "benign": 217,
+          "needs_review": 73,
+          "malicious": 195
+        },
+        "needs_review": {
+          "benign": 0,
+          "needs_review": 170,
+          "malicious": 1619
+        },
+        "malicious": {
+          "benign": 0,
+          "needs_review": 0,
+          "malicious": 3726
+        }
+      },
+      "transition_benign": {
+        "benign": {
+          "benign": 5689,
+          "needs_review": 93,
+          "malicious": 43
+        },
+        "needs_review": {
+          "benign": 0,
+          "needs_review": 116,
+          "malicious": 17
+        },
+        "malicious": {
+          "benign": 0,
+          "needs_review": 0,
+          "malicious": 42
+        }
+      },
+      "already_zero_unchanged_count": 5792,
+      "gt_zero_mal_count": 4933,
+      "gt_zero_mal_recall_before": 0.9736,
+      "gt_zero_mal_recall_after": 0.6175,
+      "gt_zero_mal_flipped_from_malicious": 1814,
+      "gt_zero_mal_flipped_to_benign": 195
+    },
+    {
+      "experiment": "A3_add_links_uri_1",
+      "uri_value": 1,
+      "mal_mean_cal_p_before": 0.9261,
+      "mal_mean_cal_p_after": 0.9569,
+      "ben_mean_cal_p_before": 0.0364,
+      "ben_mean_cal_p_after": 0.1679,
+      "recall_before": 0.9273,
+      "recall_after": 0.9598,
+      "recall_delta_ci95": [
+        0.0281,
+        0.0371
+      ],
+      "fpr_before": 0.0197,
+      "fpr_after": 0.126,
+      "fpr_delta_ci95": [
+        0.099,
+        0.1141
+      ],
+      "review_rate_before": 0.0377,
+      "review_rate_after": 0.1002,
+      "transition_all": {
+        "benign": {
+          "benign": 4380,
+          "needs_review": 6,
+          "malicious": 0
+        },
+        "needs_review": {
+          "benign": 1018,
+          "needs_review": 179,
+          "malicious": 5
+        },
+        "malicious": {
+          "benign": 508,
+          "needs_review": 267,
+          "malicious": 5637
+        }
+      },
+      "transition_malicious": {
+        "benign": {
+          "benign": 113,
+          "needs_review": 1,
+          "malicious": 0
+        },
+        "needs_review": {
+          "benign": 58,
+          "needs_review": 81,
+          "malicious": 4
+        },
+        "malicious": {
+          "benign": 46,
+          "needs_review": 161,
+          "malicious": 5536
+        }
+      },
+      "transition_benign": {
+        "benign": {
+          "benign": 4267,
+          "needs_review": 5,
+          "malicious": 0
+        },
+        "needs_review": {
+          "benign": 960,
+          "needs_review": 98,
+          "malicious": 1
+        },
+        "malicious": {
+          "benign": 462,
+          "needs_review": 106,
+          "malicious": 101
+        }
+      }
+    },
+    {
+      "experiment": "A3_add_links_uri_5",
+      "uri_value": 5,
+      "mal_mean_cal_p_before": 0.9261,
+      "mal_mean_cal_p_after": 0.9553,
+      "ben_mean_cal_p_before": 0.0364,
+      "ben_mean_cal_p_after": 0.1614,
+      "recall_before": 0.9273,
+      "recall_after": 0.9578,
+      "recall_delta_ci95": [
+        0.0261,
+        0.0352
+      ],
+      "fpr_before": 0.0197,
+      "fpr_after": 0.1213,
+      "fpr_delta_ci95": [
+        0.0946,
+        0.1095
+      ],
+      "review_rate_before": 0.0377,
+      "review_rate_after": 0.0984,
+      "transition_all": {
+        "benign": {
+          "benign": 4436,
+          "needs_review": 7,
+          "malicious": 0
+        },
+        "needs_review": {
+          "benign": 984,
+          "needs_review": 189,
+          "malicious": 8
+        },
+        "malicious": {
+          "benign": 486,
+          "needs_review": 256,
+          "malicious": 5634
+        }
+      },
+      "transition_malicious": {
+        "benign": {
+          "benign": 117,
+          "needs_review": 1,
+          "malicious": 0
+        },
+        "needs_review": {
+          "benign": 54,
+          "needs_review": 87,
+          "malicious": 4
+        },
+        "malicious": {
+          "benign": 46,
+          "needs_review": 155,
+          "malicious": 5536
+        }
+      },
+      "transition_benign": {
+        "benign": {
+          "benign": 4319,
+          "needs_review": 6,
+          "malicious": 0
+        },
+        "needs_review": {
+          "benign": 930,
+          "needs_review": 102,
+          "malicious": 4
+        },
+        "malicious": {
+          "benign": 440,
+          "needs_review": 101,
+          "malicious": 98
+        }
+      }
+    },
+    {
+      "experiment": "A3_add_links_uri_25",
+      "uri_value": 25,
+      "mal_mean_cal_p_before": 0.9261,
+      "mal_mean_cal_p_after": 0.9556,
+      "ben_mean_cal_p_before": 0.0364,
+      "ben_mean_cal_p_after": 0.1787,
+      "recall_before": 0.9273,
+      "recall_after": 0.9592,
+      "recall_delta_ci95": [
+        0.0273,
+        0.0364
+      ],
+      "fpr_before": 0.0197,
+      "fpr_after": 0.134,
+      "fpr_delta_ci95": [
+        0.1067,
+        0.1222
+      ],
+      "review_rate_before": 0.0377,
+      "review_rate_after": 0.1054,
+      "transition_all": {
+        "benign": {
+          "benign": 4272,
+          "needs_review": 23,
+          "malicious": 0
+        },
+        "needs_review": {
+          "benign": 1089,
+          "needs_review": 163,
+          "malicious": 13
+        },
+        "malicious": {
+          "benign": 545,
+          "needs_review": 266,
+          "malicious": 5629
+        }
+      },
+      "transition_malicious": {
+        "benign": {
+          "benign": 108,
+          "needs_review": 15,
+          "malicious": 0
+        },
+        "needs_review": {
+          "benign": 63,
+          "needs_review": 72,
+          "malicious": 8
+        },
+        "malicious": {
+          "benign": 46,
+          "needs_review": 156,
+          "malicious": 5532
+        }
+      },
+      "transition_benign": {
+        "benign": {
+          "benign": 4164,
+          "needs_review": 8,
+          "malicious": 0
+        },
+        "needs_review": {
+          "benign": 1026,
+          "needs_review": 91,
+          "malicious": 5
+        },
+        "malicious": {
+          "benign": 499,
+          "needs_review": 110,
+          "malicious": 97
+        }
+      }
+    }
+  ],
+  "spearman_top10_with_uri": [
+    {
+      "feature": "strings_regex_/URI",
+      "spearman_rho": 1.0
+    },
+    {
+      "feature": "strings_regex_https://",
+      "spearman_rho": 0.8399
+    },
+    {
+      "feature": "strings_printables",
+      "spearman_rho": -0.0549
+    },
+    {
+      "feature": "strings_numstrings",
+      "spearman_rho": -0.16
+    },
+    {
+      "feature": "strings_printabledist_68",
+      "spearman_rho": 0.5504
+    },
+    {
+      "feature": "strings_regex_decode",
+      "spearman_rho": -0.2245
+    },
+    {
+      "feature": "strings_printabledist_80",
+      "spearman_rho": 0.6741
+    },
+    {
+      "feature": "strings_printabledist_38",
+      "spearman_rho": -0.5649
+    },
+    {
+      "feature": "general_size",
+      "spearman_rho": -0.2597
+    },
+    {
+      "feature": "strings_regex_/FlateDecode",
+      "spearman_rho": -0.1559
+    }
+  ],
+  "ablations": [
+    {
+      "variant": "control_658",
+      "n_features": 658,
+      "val": {
+        "f1": 0.9824,
+        "precision": 0.9963,
+        "recall": 0.9688,
+        "fpr": 0.0036,
+        "roc_auc": 0.9977,
+        "pr_auc": 0.9982
+      },
+      "test": {
+        "f1": 0.9451,
+        "precision": 0.99,
+        "recall": 0.9042,
+        "fpr": 0.0092,
+        "roc_auc": 0.9887,
+        "pr_auc": 0.9911
+      },
+      "test_ci95": {
+        "f1": [
+          0.941,
+          0.9494
+        ],
+        "recall": [
+          0.8971,
+          0.9116
+        ],
+        "fpr": [
+          0.007,
+          0.0115
+        ]
+      }
+    },
+    {
+      "variant": "no_uri_657",
+      "n_features": 657,
+      "val": {
+        "f1": 0.9784,
+        "precision": 0.9965,
+        "recall": 0.961,
+        "fpr": 0.0034,
+        "roc_auc": 0.9968,
+        "pr_auc": 0.9976
+      },
+      "test": {
+        "f1": 0.9476,
+        "precision": 0.9905,
+        "recall": 0.9082,
+        "fpr": 0.0087,
+        "roc_auc": 0.987,
+        "pr_auc": 0.9901
+      },
+      "test_ci95": {
+        "f1": [
+          0.9436,
+          0.9516
+        ],
+        "recall": [
+          0.9014,
+          0.9154
+        ],
+        "fpr": [
+          0.0065,
+          0.011
+        ]
+      }
+    },
+    {
+      "variant": "no_regex_581",
+      "n_features": 618,
+      "val": {
+        "f1": 0.9573,
+        "precision": 0.995,
+        "recall": 0.9224,
+        "fpr": 0.0046,
+        "roc_auc": 0.9933,
+        "pr_auc": 0.9949
+      },
+      "test": {
+        "f1": 0.9388,
+        "precision": 0.9871,
+        "recall": 0.895,
+        "fpr": 0.0117,
+        "roc_auc": 0.9842,
+        "pr_auc": 0.9878
+      },
+      "test_ci95": {
+        "f1": [
+          0.9343,
+          0.9433
+        ],
+        "recall": [
+          0.8875,
+          0.9029
+        ],
+        "fpr": [
+          0.009,
+          0.0144
+        ]
+      }
+    }
+  ]
+}

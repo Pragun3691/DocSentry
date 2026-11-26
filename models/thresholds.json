@@ -17,11 +17,5 @@
     "alpha": 0.05,
     "q_hat": 0.079170201740128,
     "test_coverage": 0.89725
-  },
-  "ood_thresholds": {
-    "size_p05": 358.0,
-    "size_p995": 30602208.0,
-    "numstrings_p05": 17.0,
-    "numstrings_p995": 181974.5
   }
 }

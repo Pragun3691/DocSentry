@@ -1,0 +1,8 @@
+experiment,type,recall,fpr,review_rate,mal_mean_cal_p,ben_mean_cal_p,test_f1,test_roc_auc
+A2_remove_links_uri_0,counterfactual,0.6345,0.0082,0.1602,0.6728,0.0219,,
+A3_add_links_uri_1,counterfactual,0.9598,0.126,0.1002,0.9569,0.1679,,
+A3_add_links_uri_5,counterfactual,0.9578,0.1213,0.0984,0.9553,0.1614,,
+A3_add_links_uri_25,counterfactual,0.9592,0.134,0.1054,0.9556,0.1787,,
+control_658,ablation_0.5_thresh,0.9042,0.0092,,,,0.9451,0.9887
+no_uri_657,ablation_0.5_thresh,0.9082,0.0087,,,,0.9476,0.987
+no_regex_581,ablation_0.5_thresh,0.895,0.0117,,,,0.9388,0.9842
