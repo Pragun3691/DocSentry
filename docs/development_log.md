@@ -8,11 +8,11 @@
 - **Phase**: Read-only exploration and data ingestion sanity audit.
 - **Completed**: 2026-11-24
 - **Files Created**:
-  - [`notebooks/01_data_understanding.ipynb`](file:///<PROJECT_ROOT>/notebooks/01_data_understanding.ipynb)
-  - [`reports/figures/01_label_distribution.png`](file:///<PROJECT_ROOT>/reports/figures/01_label_distribution.png)
-  - [`reports/figures/02_missing_values.png`](file:///<PROJECT_ROOT>/reports/figures/02_missing_values.png)
-  - [`reports/figures/03_feature_families.png`](file:///<PROJECT_ROOT>/reports/figures/03_feature_families.png)
-  - [`reports/figures/04_numeric_features_distribution.png`](file:///<PROJECT_ROOT>/reports/figures/04_numeric_features_distribution.png)
+  - [`notebooks/01_data_understanding.ipynb`](notebooks/01_data_understanding.ipynb)
+  - [`reports/figures/01_label_distribution.png`](reports/figures/01_label_distribution.png)
+  - [`reports/figures/02_missing_values.png`](reports/figures/02_missing_values.png)
+  - [`reports/figures/03_feature_families.png`](reports/figures/03_feature_families.png)
+  - [`reports/figures/04_numeric_features_distribution.png`](reports/figures/04_numeric_features_distribution.png)
 - **Key Numbers & Findings**:
   - **Raw Corpus**: 64 weekly `.jsonl` files (52 train + 12 test), totaling 128,000 raw lines (151.4 MB compressed).
   - **Raw Balance**: Train contains 104,000 records (52,000 benign, 52,000 malicious; 50.0% / 50.0%). Test contains 24,000 records (12,000 benign, 12,000 malicious; 50.0% / 50.0%).
@@ -26,23 +26,23 @@
 - **Phase**: In-depth univariate, bivariate, and multivariate distribution analysis.
 - **Completed**: 2026-11-24
 - **Files Created**:
-  - [`notebooks/02_eda.ipynb`](file:///<PROJECT_ROOT>/notebooks/02_eda.ipynb)
-  - [`data/processed/dedup_train.parquet`](file:///<PROJECT_ROOT>/data/processed/dedup_train.parquet) (52,000 samples)
-  - [`data/processed/dedup_test.parquet`](file:///<PROJECT_ROOT>/data/processed/dedup_test.parquet) (12,000 samples)
+  - [`notebooks/02_eda.ipynb`](notebooks/02_eda.ipynb)
+  - [`data/processed/dedup_train.parquet`](data/processed/dedup_train.parquet) (52,000 samples)
+  - [`data/processed/dedup_test.parquet`](data/processed/dedup_test.parquet) (12,000 samples)
   - 13 figures in `reports/figures/`:
-    - [`05_class_balance_dedup.png`](file:///<PROJECT_ROOT>/reports/figures/05_class_balance_dedup.png)
-    - [`06_file_size_distribution.png`](file:///<PROJECT_ROOT>/reports/figures/06_file_size_distribution.png)
-    - [`07_file_entropy_distribution.png`](file:///<PROJECT_ROOT>/reports/figures/07_file_entropy_distribution.png)
-    - [`08_string_stats_distribution.png`](file:///<PROJECT_ROOT>/reports/figures/08_string_stats_distribution.png)
-    - [`09_mean_byte_histogram.png`](file:///<PROJECT_ROOT>/reports/figures/09_mean_byte_histogram.png)
-    - [`10_zero_inflation_histogram.png`](file:///<PROJECT_ROOT>/reports/figures/10_zero_inflation_histogram.png)
-    - [`11_feature_skewness_distribution.png`](file:///<PROJECT_ROOT>/reports/figures/11_feature_skewness_distribution.png)
-    - [`12_top25_effect_size_cohens_d.png`](file:///<PROJECT_ROOT>/reports/figures/12_top25_effect_size_cohens_d.png)
-    - [`13_top8_separating_violins.png`](file:///<PROJECT_ROOT>/reports/figures/13_top8_separating_violins.png)
-    - [`14_string_indicators_heatmap.png`](file:///<PROJECT_ROOT>/reports/figures/14_string_indicators_heatmap.png)
-    - [`15_non_histogram_correlation_heatmap.png`](file:///<PROJECT_ROOT>/reports/figures/15_non_histogram_correlation_heatmap.png)
-    - [`16_pca_2d_projection.png`](file:///<PROJECT_ROOT>/reports/figures/16_pca_2d_projection.png)
-    - [`17_train_test_distribution_shift.png`](file:///<PROJECT_ROOT>/reports/figures/17_train_test_distribution_shift.png)
+    - [`05_class_balance_dedup.png`](reports/figures/05_class_balance_dedup.png)
+    - [`06_file_size_distribution.png`](reports/figures/06_file_size_distribution.png)
+    - [`07_file_entropy_distribution.png`](reports/figures/07_file_entropy_distribution.png)
+    - [`08_string_stats_distribution.png`](reports/figures/08_string_stats_distribution.png)
+    - [`09_mean_byte_histogram.png`](reports/figures/09_mean_byte_histogram.png)
+    - [`10_zero_inflation_histogram.png`](reports/figures/10_zero_inflation_histogram.png)
+    - [`11_feature_skewness_distribution.png`](reports/figures/11_feature_skewness_distribution.png)
+    - [`12_top25_effect_size_cohens_d.png`](reports/figures/12_top25_effect_size_cohens_d.png)
+    - [`13_top8_separating_violins.png`](reports/figures/13_top8_separating_violins.png)
+    - [`14_string_indicators_heatmap.png`](reports/figures/14_string_indicators_heatmap.png)
+    - [`15_non_histogram_correlation_heatmap.png`](reports/figures/15_non_histogram_correlation_heatmap.png)
+    - [`16_pca_2d_projection.png`](reports/figures/16_pca_2d_projection.png)
+    - [`17_train_test_distribution_shift.png`](reports/figures/17_train_test_distribution_shift.png)
 - **Key Numbers & Findings**:
   - **Deduplication Audit**: Deduplication on `sha256` reduced training from 104,000 to exactly 52,000 unique records (26,000 benign, 26,000 malicious) and test from 24,000 to exactly 12,000 unique records (6,000 benign, 6,000 malicious).
   - **Feature Reconciliation**: Reconciled the 689 vs. 696 difference: 689 represents the subset of byte histograms (256), byte-entropy histograms (256), and strings (177), whereas 696 includes all 7 `GeneralFileInfo` features (`general_size`, `general_entropy`, `general_is_pe`, and 4 header start bytes).
@@ -60,21 +60,21 @@
 - **Phase**: Temporal train/val/test splitting, fuzzy hash deduplication, adversarial drift quantification, feature selection, dual normalization pipeline, and dataset serialization.
 - **Completed**: 2026-11-24
 - **Files Created**:
-  - [`notebooks/03_preprocessing.ipynb`](file:///<PROJECT_ROOT>/notebooks/03_preprocessing.ipynb)
-  - [`reports/figures/18_scaling_before_after.png`](file:///<PROJECT_ROOT>/reports/figures/18_scaling_before_after.png)
-  - [`reports/figures/19_feature_reduction_waterfall.png`](file:///<PROJECT_ROOT>/reports/figures/19_feature_reduction_waterfall.png)
-  - [`data/processed/X_train_tree.parquet`](file:///<PROJECT_ROOT>/data/processed/X_train_tree.parquet) (42,000 × 658, 105.74 MB)
-  - [`data/processed/X_val_tree.parquet`](file:///<PROJECT_ROOT>/data/processed/X_val_tree.parquet) (9,999 × 658, 25.17 MB)
-  - [`data/processed/X_test_tree.parquet`](file:///<PROJECT_ROOT>/data/processed/X_test_tree.parquet) (12,000 × 658, 30.22 MB)
-  - [`data/processed/X_train_linear.parquet`](file:///<PROJECT_ROOT>/data/processed/X_train_linear.parquet) (42,000 × 658, 105.74 MB)
-  - [`data/processed/X_val_linear.parquet`](file:///<PROJECT_ROOT>/data/processed/X_val_linear.parquet) (9,999 × 658, 25.17 MB)
-  - [`data/processed/X_test_linear.parquet`](file:///<PROJECT_ROOT>/data/processed/X_test_linear.parquet) (12,000 × 658, 30.22 MB)
-  - [`data/processed/y_train.parquet`](file:///<PROJECT_ROOT>/data/processed/y_train.parquet) (42,000 rows)
-  - [`data/processed/y_val.parquet`](file:///<PROJECT_ROOT>/data/processed/y_val.parquet) (9,999 rows)
-  - [`data/processed/y_test.parquet`](file:///<PROJECT_ROOT>/data/processed/y_test.parquet) (12,000 rows)
-  - [`data/processed/feature_names.json`](file:///<PROJECT_ROOT>/data/processed/feature_names.json) (658 feature names in exact column order)
-  - [`data/processed/scaler.joblib`](file:///<PROJECT_ROOT>/data/processed/scaler.joblib) (StandardScaler fitted strictly on X_train_linear)
-  - [`data/processed/preprocessing_report.json`](file:///<PROJECT_ROOT>/data/processed/preprocessing_report.json)
+  - [`notebooks/03_preprocessing.ipynb`](notebooks/03_preprocessing.ipynb)
+  - [`reports/figures/18_scaling_before_after.png`](reports/figures/18_scaling_before_after.png)
+  - [`reports/figures/19_feature_reduction_waterfall.png`](reports/figures/19_feature_reduction_waterfall.png)
+  - [`data/processed/X_train_tree.parquet`](data/processed/X_train_tree.parquet) (42,000 × 658, 105.74 MB)
+  - [`data/processed/X_val_tree.parquet`](data/processed/X_val_tree.parquet) (9,999 × 658, 25.17 MB)
+  - [`data/processed/X_test_tree.parquet`](data/processed/X_test_tree.parquet) (12,000 × 658, 30.22 MB)
+  - [`data/processed/X_train_linear.parquet`](data/processed/X_train_linear.parquet) (42,000 × 658, 105.74 MB)
+  - [`data/processed/X_val_linear.parquet`](data/processed/X_val_linear.parquet) (9,999 × 658, 25.17 MB)
+  - [`data/processed/X_test_linear.parquet`](data/processed/X_test_linear.parquet) (12,000 × 658, 30.22 MB)
+  - [`data/processed/y_train.parquet`](data/processed/y_train.parquet) (42,000 rows)
+  - [`data/processed/y_val.parquet`](data/processed/y_val.parquet) (9,999 rows)
+  - [`data/processed/y_test.parquet`](data/processed/y_test.parquet) (12,000 rows)
+  - [`data/processed/feature_names.json`](data/processed/feature_names.json) (658 feature names in exact column order)
+  - [`data/processed/scaler.joblib`](data/processed/scaler.joblib) (StandardScaler fitted strictly on X_train_linear)
+  - [`data/processed/preprocessing_report.json`](data/processed/preprocessing_report.json)
 - **Key Numbers & Findings**:
   - **Part A (Verification)**:
     - Confirmed 77 compiled regex patterns in `thrember`'s `StringExtractor` (3 PDF-specific keywords: `/URI`, `/FlateDecode`, `/EmbeddedFile`).
@@ -107,24 +107,24 @@
 - **Phase**: Baseline benchmarking, 15-candidate random search tuning (train on Train, select strictly on Validation), single-pass test evaluation, size-shortcut ablation, feature importance analysis, and 4 in-depth diagnostic audits.
 - **Completed**: 2026-11-24
 - **Files Created / Updated**:
-  - [`notebooks/04_modeling.ipynb`](file:///<PROJECT_ROOT>/notebooks/04_modeling.ipynb)
-  - [`models/logistic_regression.joblib`](file:///<PROJECT_ROOT>/models/logistic_regression.joblib)
-  - [`models/random_forest.joblib`](file:///<PROJECT_ROOT>/models/random_forest.joblib)
-  - [`models/xgboost.joblib`](file:///<PROJECT_ROOT>/models/xgboost.joblib)
-  - [`models/histgradientboosting.joblib`](file:///<PROJECT_ROOT>/models/histgradientboosting.joblib)
-  - [`models/best_model.joblib`](file:///<PROJECT_ROOT>/models/best_model.joblib)
-  - [`reports/model_comparison.csv`](file:///<PROJECT_ROOT>/reports/model_comparison.csv)
-  - [`reports/best_params.json`](file:///<PROJECT_ROOT>/reports/best_params.json)
-  - [`reports/figures/20_model_validation_comparison.png`](file:///<PROJECT_ROOT>/reports/figures/20_model_validation_comparison.png)
-  - [`reports/figures/21_test_confusion_matrices.png`](file:///<PROJECT_ROOT>/reports/figures/21_test_confusion_matrices.png)
-  - [`reports/figures/22_test_roc_curves.png`](file:///<PROJECT_ROOT>/reports/figures/22_test_roc_curves.png)
-  - [`reports/figures/23_test_pr_curves.png`](file:///<PROJECT_ROOT>/reports/figures/23_test_pr_curves.png)
-  - [`reports/figures/24_feature_importance.png`](file:///<PROJECT_ROOT>/reports/figures/24_feature_importance.png)
-  - [`reports/figures/25_malicious_size_clusters.png`](file:///<PROJECT_ROOT>/reports/figures/25_malicious_size_clusters.png)
-  - [`reports/figures/26_feature_importance_ascii_labeled.png`](file:///<PROJECT_ROOT>/reports/figures/26_feature_importance_ascii_labeled.png)
+  - [`notebooks/04_modeling.ipynb`](notebooks/04_modeling.ipynb)
+  - [`models/logistic_regression.joblib`](models/logistic_regression.joblib)
+  - [`models/random_forest.joblib`](models/random_forest.joblib)
+  - [`models/xgboost.joblib`](models/xgboost.joblib)
+  - [`models/histgradientboosting.joblib`](models/histgradientboosting.joblib)
+  - [`models/best_model.joblib`](models/best_model.joblib)
+  - [`reports/model_comparison.csv`](reports/model_comparison.csv)
+  - [`reports/best_params.json`](reports/best_params.json)
+  - [`reports/figures/20_model_validation_comparison.png`](reports/figures/20_model_validation_comparison.png)
+  - [`reports/figures/21_test_confusion_matrices.png`](reports/figures/21_test_confusion_matrices.png)
+  - [`reports/figures/22_test_roc_curves.png`](reports/figures/22_test_roc_curves.png)
+  - [`reports/figures/23_test_pr_curves.png`](reports/figures/23_test_pr_curves.png)
+  - [`reports/figures/24_feature_importance.png`](reports/figures/24_feature_importance.png)
+  - [`reports/figures/25_malicious_size_clusters.png`](reports/figures/25_malicious_size_clusters.png)
+  - [`reports/figures/26_feature_importance_ascii_labeled.png`](reports/figures/26_feature_importance_ascii_labeled.png)
 - **Key Numbers & Findings**:
   - **1. Integrity & Baselines**:
-    - Confirmed exact feature alignment against [`feature_names.json`](file:///<PROJECT_ROOT>/data/processed/feature_names.json) (658 features) with 0 `NaN` and 0 `inf`.
+    - Confirmed exact feature alignment against [`feature_names.json`](data/processed/feature_names.json) (658 features) with 0 `NaN` and 0 `inf`.
     - `DummyClassifier(strategy='most_frequent')`: Accuracy = 50.01%, F1 = 0.0000, ROC-AUC = 0.5000, Recall = 0.0000.
     - Default `LogisticRegression`: Accuracy = 96.66%, Precision = 98.34%, Recall = 94.92%, F1 = 0.9660, ROC-AUC = 0.9876.
   - **2. Hyperparameter Tuning on Train (42k) / Selection on Validation (9,999)**:
@@ -161,27 +161,27 @@
 - **Phase**: Statistical comparison, size-matched evaluation, validation-only probability calibration, dual-threshold review band, longitudinal uncertainty drift tracking, conformal prediction, global/local SHAP analysis, and production inference engine.
 - **Completed**: 2026-11-24
 - **Files Created / Updated**:
-  - [`notebooks/05_explain_uncertainty.ipynb`](file:///<PROJECT_ROOT>/notebooks/05_explain_uncertainty.ipynb)
-  - [`models/calibrator.joblib`](file:///<PROJECT_ROOT>/models/calibrator.joblib)
-  - [`models/thresholds.json`](file:///<PROJECT_ROOT>/models/thresholds.json)
-  - [`src/__init__.py`](file:///<PROJECT_ROOT>/src/__init__.py)
-  - [`src/docsentry_infer.py`](file:///<PROJECT_ROOT>/src/docsentry_infer.py)
-  - [`tests/test_infer.py`](file:///<PROJECT_ROOT>/tests/test_infer.py)
+  - [`notebooks/05_explain_uncertainty.ipynb`](notebooks/05_explain_uncertainty.ipynb)
+  - [`models/calibrator.joblib`](models/calibrator.joblib)
+  - [`models/thresholds.json`](models/thresholds.json)
+  - [`src/__init__.py`](src/__init__.py)
+  - [`src/docsentry_infer.py`](src/docsentry_infer.py)
+  - [`tests/test_infer.py`](tests/test_infer.py)
   - 14 figures in `reports/figures/`:
-    - [`27_bootstrap_test_ci_comparison.png`](file:///<PROJECT_ROOT>/reports/figures/27_bootstrap_test_ci_comparison.png)
-    - [`28_size_matched_evaluation.png`](file:///<PROJECT_ROOT>/reports/figures/28_size_matched_evaluation.png)
-    - [`29_calibration_reliability_diagrams.png`](file:///<PROJECT_ROOT>/reports/figures/29_calibration_reliability_diagrams.png)
-    - [`30_threshold_recall_fpr_tradeoff.png`](file:///<PROJECT_ROOT>/reports/figures/30_threshold_recall_fpr_tradeoff.png)
-    - [`31_accuracy_vs_coverage_curve.png`](file:///<PROJECT_ROOT>/reports/figures/31_accuracy_vs_coverage_curve.png)
-    - [`32_weekly_review_rate_drift.png`](file:///<PROJECT_ROOT>/reports/figures/32_weekly_review_rate_drift.png)
-    - [`33_shap_global_importance_bar.png`](file:///<PROJECT_ROOT>/reports/figures/33_shap_global_importance_bar.png)
-    - [`34_shap_summary_beeswarm.png`](file:///<PROJECT_ROOT>/reports/figures/34_shap_summary_beeswarm.png)
-    - [`35_shap_family_importance_bar.png`](file:///<PROJECT_ROOT>/reports/figures/35_shap_family_importance_bar.png)
-    - [`36_1_true_positive.png`](file:///<PROJECT_ROOT>/reports/figures/36_1_true_positive.png)
-    - [`36_2_true_negative.png`](file:///<PROJECT_ROOT>/reports/figures/36_2_true_negative.png)
-    - [`36_3_false_positive.png`](file:///<PROJECT_ROOT>/reports/figures/36_3_false_positive.png)
-    - [`36_4_false_negative.png`](file:///<PROJECT_ROOT>/reports/figures/36_4_false_negative.png)
-    - [`36_5_review_band.png`](file:///<PROJECT_ROOT>/reports/figures/36_5_review_band.png)
+    - [`27_bootstrap_test_ci_comparison.png`](reports/figures/27_bootstrap_test_ci_comparison.png)
+    - [`28_size_matched_evaluation.png`](reports/figures/28_size_matched_evaluation.png)
+    - [`29_calibration_reliability_diagrams.png`](reports/figures/29_calibration_reliability_diagrams.png)
+    - [`30_threshold_recall_fpr_tradeoff.png`](reports/figures/30_threshold_recall_fpr_tradeoff.png)
+    - [`31_accuracy_vs_coverage_curve.png`](reports/figures/31_accuracy_vs_coverage_curve.png)
+    - [`32_weekly_review_rate_drift.png`](reports/figures/32_weekly_review_rate_drift.png)
+    - [`33_shap_global_importance_bar.png`](reports/figures/33_shap_global_importance_bar.png)
+    - [`34_shap_summary_beeswarm.png`](reports/figures/34_shap_summary_beeswarm.png)
+    - [`35_shap_family_importance_bar.png`](reports/figures/35_shap_family_importance_bar.png)
+    - [`36_1_true_positive.png`](reports/figures/36_1_true_positive.png)
+    - [`36_2_true_negative.png`](reports/figures/36_2_true_negative.png)
+    - [`36_3_false_positive.png`](reports/figures/36_3_false_positive.png)
+    - [`36_4_false_negative.png`](reports/figures/36_4_false_negative.png)
+    - [`36_5_review_band.png`](reports/figures/36_5_review_band.png)
 - **Key Numbers & Findings**:
   - **1. Statistical Comparison (1,000 Bootstrap Resamples on Test Set)**:
     - **HistGradientBoosting**: F1 = 0.9480 [0.9439, 0.9521], Recall = 0.9075 [0.9005, 0.9148], FPR = 0.0070 [0.0049, 0.0091], ROC-AUC = 0.9890 [0.9873, 0.9906].
@@ -238,26 +238,26 @@
 - **Phase**: Reusable static feature extractor, pipeline-fidelity unit testing, CLI batch scanning, synthetic adversarial PDF generation, and real-world evaluation demo.
 - **Completed**: 2026-11-24
 - **Files Created / Updated**:
-  - [`src/docsentry_extract.py`](file:///<PROJECT_ROOT>/src/docsentry_extract.py)
-  - [`tests/test_extract.py`](file:///<PROJECT_ROOT>/tests/test_extract.py)
-  - [`scripts/generate_synthetic_pdfs.py`](file:///<PROJECT_ROOT>/scripts/generate_synthetic_pdfs.py)
-  - [`scripts/scan_pdfs.py`](file:///<PROJECT_ROOT>/scripts/scan_pdfs.py)
-  - [`reports/demo_scan_results.csv`](file:///<PROJECT_ROOT>/reports/demo_scan_results.csv)
-  - [`notebooks/06_real_pdf_demo.ipynb`](file:///<PROJECT_ROOT>/notebooks/06_real_pdf_demo.ipynb)
-  - [`reports/figures/37_demo_synthetic_shap_contributions.png`](file:///<PROJECT_ROOT>/reports/figures/37_demo_synthetic_shap_contributions.png)
-  - Synthetic test PDFs in [`data/demo_pdfs/synthetic/`](file:///<PROJECT_ROOT>/data/demo_pdfs/synthetic/):
+  - [`src/docsentry_extract.py`](src/docsentry_extract.py)
+  - [`tests/test_extract.py`](tests/test_extract.py)
+  - [`scripts/generate_synthetic_pdfs.py`](scripts/generate_synthetic_pdfs.py)
+  - [`scripts/scan_pdfs.py`](scripts/scan_pdfs.py)
+  - [`reports/demo_scan_results.csv`](reports/demo_scan_results.csv)
+  - [`notebooks/06_real_pdf_demo.ipynb`](notebooks/06_real_pdf_demo.ipynb)
+  - [`reports/figures/37_demo_synthetic_shap_contributions.png`](reports/figures/37_demo_synthetic_shap_contributions.png)
+  - Synthetic test PDFs in [`data/demo_pdfs/synthetic/`](data/demo_pdfs/synthetic/):
     - `synthetic_a_minimal_blank.pdf` (335 bytes)
     - `synthetic_b_one_page_text.pdf` (832 bytes)
     - `synthetic_c_20_page_report.pdf` (3,684 bytes)
     - `synthetic_d_25_uris.pdf` (7,147 bytes)
     - `synthetic_e_embedded_js.pdf` (839 bytes)
     - `synthetic_f_large_5mb.pdf` (5,500,811 bytes, 5.25 MB)
-  - User PDF testing directory: [`data/demo_pdfs/user/`](file:///<PROJECT_ROOT>/data/demo_pdfs/user/)
+  - User PDF testing directory: [`data/demo_pdfs/user/`](data/demo_pdfs/user/)
 - **Key Numbers & Findings**:
   - **1. Feature Extractor Architecture (`src/docsentry_extract.py`)**:
     - Reused upstream `thrember` classes directly: `GeneralFileInfo`, `ByteHistogram`, `ByteEntropyHistogram`, `StringExtractor`.
     - Implemented safe non-PE static parsing (`pe=None`), guaranteed magic-byte validation (`b'%PDF'`), empty file handling, and a strict 50 MB file size limit (`MAX_FILE_SIZE_BYTES = 52,428,800`).
-    - Produces a $1 \times 658$ feature DataFrame matching the exact feature order of [`feature_names.json`](file:///<PROJECT_ROOT>/data/processed/feature_names.json).
+    - Produces a $1 \times 658$ feature DataFrame matching the exact feature order of [`feature_names.json`](data/processed/feature_names.json).
   - **2. Pipeline Fidelity & Invariant Unit Tests (`tests/test_extract.py`)**:
     - **Pipeline Fidelity**: Streamed 200 raw test records from `data/raw/*.jsonl` through the extraction, column-dropping, and ordering pipeline; verified exact numerical equality against `X_test_tree.parquet` with **0.00e+00 maximum absolute difference**.
     - **Invariants**: Validated $(1, 658)$ output shape, exact feature order, zero `NaN`/`inf`, byte histogram sum to ~1.0, exact `general_size` match to byte count, header byte verification (`0x25 0x50 0x44 0x46`), and byte-level determinism.
@@ -285,10 +285,10 @@
 - **Phase**: Calibrator plateau root cause analysis, synthetic structural audit, train-split OOD warning envelope, and 9-file user document audit.
 - **Completed**: 2026-11-24
 - **Files Created / Updated**:
-  - [`notebooks/07_demo_diagnostics.ipynb`](file:///<PROJECT_ROOT>/notebooks/07_demo_diagnostics.ipynb)
-  - [`reports/figures/38_calibrator_plateau_steps.png`](file:///<PROJECT_ROOT>/reports/figures/38_calibrator_plateau_steps.png)
-  - [`reports/figures/39_ood_percentiles_distribution.png`](file:///<PROJECT_ROOT>/reports/figures/39_ood_percentiles_distribution.png)
-  - [`models/thresholds.json`](file:///<PROJECT_ROOT>/models/thresholds.json) (added `ood_thresholds`)
+  - [`notebooks/07_demo_diagnostics.ipynb`](notebooks/07_demo_diagnostics.ipynb)
+  - [`reports/figures/38_calibrator_plateau_steps.png`](reports/figures/38_calibrator_plateau_steps.png)
+  - [`reports/figures/39_ood_percentiles_distribution.png`](reports/figures/39_ood_percentiles_distribution.png)
+  - [`models/thresholds.json`](models/thresholds.json) (added `ood_thresholds`)
 - **Key Numbers & Findings**:
   - **1. Feature Vector Dissimilarity & Calibrator Plateau**:
     - `synthetic_a` (335 B): Raw margin = -1.096793, raw $P = 0.250341$, calibrated $P = 0.408163$, size = 335 B, numstrings = 18, printables = 298, byte hist sum = 1.000000.
@@ -330,15 +330,15 @@
 - **Phase**: FastAPI REST API, zero-CDN accessible UI, 17 automated tests, and headless screenshot verification.
 - **Completed**: 2026-11-24
 - **Files Created / Updated**:
-  - [`app/main.py`](file:///<PROJECT_ROOT>/app/main.py)
-  - [`app/static/index.html`](file:///<PROJECT_ROOT>/app/static/index.html)
-  - [`app/static/style.css`](file:///<PROJECT_ROOT>/app/static/style.css)
-  - [`app/static/app.js`](file:///<PROJECT_ROOT>/app/static/app.js)
-  - [`tests/test_api.py`](file:///<PROJECT_ROOT>/tests/test_api.py)
-  - [`run_app.bat`](file:///<PROJECT_ROOT>/run_app.bat)
-  - [`README.md`](file:///<PROJECT_ROOT>/README.md)
-  - [`requirements.txt`](file:///<PROJECT_ROOT>/requirements.txt)
-  - [`reports/figures/ui_landing.png`](file:///<PROJECT_ROOT>/reports/figures/ui_landing.png)
+  - [`app/main.py`](app/main.py)
+  - [`app/static/index.html`](app/static/index.html)
+  - [`app/static/style.css`](app/static/style.css)
+  - [`app/static/app.js`](app/static/app.js)
+  - [`tests/test_api.py`](tests/test_api.py)
+  - [`run_app.bat`](run_app.bat)
+  - [`README.md`](README.md)
+  - [`requirements.txt`](requirements.txt)
+  - [`reports/figures/ui_landing.png`](reports/figures/ui_landing.png)
 - **Key Numbers & Findings**:
   - **1. Production Server Architecture**:
     - Endpoints: `GET /health`, `GET /model-info`, `POST /scan`.
@@ -355,18 +355,18 @@
 - **Phase**: Complete visual redesign (zero blue hues, WCAG contrast compliance), SVG chart & gauge fixes, honest wording & `/URI` dependence evidence note, `MODEL_CARD.md`, and `report_assets/` bundler.
 - **Completed**: 2026-11-25
 - **Files Created / Updated**:
-  - [`app/static/index.html`](file:///<PROJECT_ROOT>/app/static/index.html)
-  - [`app/static/style.css`](file:///<PROJECT_ROOT>/app/static/style.css)
-  - [`app/static/app.js`](file:///<PROJECT_ROOT>/app/static/app.js)
-  - [`app/main.py`](file:///<PROJECT_ROOT>/app/main.py)
-  - [`reports/uri_dependence.json`](file:///<PROJECT_ROOT>/reports/uri_dependence.json)
-  - [`MODEL_CARD.md`](file:///<PROJECT_ROOT>/MODEL_CARD.md)
-  - [`scripts/make_report_assets.py`](file:///<PROJECT_ROOT>/scripts/make_report_assets.py)
-  - [`scripts/check_contrast.py`](file:///<PROJECT_ROOT>/scripts/check_contrast.py)
-  - [`scripts/capture_ui_screenshots.py`](file:///<PROJECT_ROOT>/scripts/capture_ui_screenshots.py)
-  - [`requirements.txt`](file:///<PROJECT_ROOT>/requirements.txt)
-  - [`README.md`](file:///<PROJECT_ROOT>/README.md)
-  - [`report_assets/index.md`](file:///<PROJECT_ROOT>/report_assets/index.md)
+  - [`app/static/index.html`](app/static/index.html)
+  - [`app/static/style.css`](app/static/style.css)
+  - [`app/static/app.js`](app/static/app.js)
+  - [`app/main.py`](app/main.py)
+  - [`reports/uri_dependence.json`](reports/uri_dependence.json)
+  - [`MODEL_CARD.md`](MODEL_CARD.md)
+  - [`scripts/make_report_assets.py`](scripts/make_report_assets.py)
+  - [`scripts/check_contrast.py`](scripts/check_contrast.py)
+  - [`scripts/capture_ui_screenshots.py`](scripts/capture_ui_screenshots.py)
+  - [`requirements.txt`](requirements.txt)
+  - [`README.md`](README.md)
+  - [`report_assets/index.md`](report_assets/index.md)
 - **Key Highlights & Verification**:
   - **1. Visual Redesign & Zero Blue**: Replaced navy/blue palette with CSS custom properties (`#141414`/`#1D1D1D` dark, `#F7F5F2`/`#FFFFFF` light), amber `#E0A030` / `#1B1B1A` focus rings, and saturated verdict colors only. Verified 0 blue hex/HSL hues remain.
   - **2. Contrast Compliance**: Verified WCAG AA compliance ($\ge 4.5:1$ text, $\ge 3.0:1$ UI components) across both themes via `scripts/check_contrast.py`.
@@ -378,7 +378,7 @@
   - **3. HTTP API Verification & Headless Screenshots**:
     - Started uvicorn server on loopback port 8000.
     - Scanned all 3 synthetic PDFs and all 9 user PDFs through HTTP `POST /scan`; 12 / 12 verdicts matched expected outputs identically.
-    - Captured full-page headless UI screenshot in [`reports/figures/ui_landing.png`](file:///<PROJECT_ROOT>/reports/figures/ui_landing.png) via Microsoft Edge headless mode.
+    - Captured full-page headless UI screenshot in [`reports/figures/ui_landing.png`](reports/figures/ui_landing.png) via Microsoft Edge headless mode.
 
 ---
 
@@ -397,7 +397,7 @@
     - Captured sliced `ui_v3_*.png` full-page screenshots (`<= 1400 px` height) and 7 section screenshots.
   - **UI Review Fixes, Notebook 08 (`/URI` Counterfactual & Ablations) & Model Card Finalization**:
     - Moved top ticker above header (`32 px`, `13 px` mono, dark card hairline surface), fixed `< 640 px` mobile stacked SHAP/family charts (`width >= 4 px` verified), fixed `/model-info` `inside_band`/`outside_band` error readout, added `HISTORY` label bar & verified real `#file-input` 3-row reload, added 3 distinct surface levels + inside-bar gauge labels, switched all displayed sizes to decimal MB (`1 MB = 1,000,000 B`) and `20 MiB` upload cap, and updated OOD banner wording.
-    - Created and executed [`notebooks/08_uri_counterfactual.ipynb`](file:///<PROJECT_ROOT>/notebooks/08_uri_counterfactual.ipynb): verified `554` test errors & `71.32%` `/URI==0` recall; ran `/URI=0,1,5,25` counterfactuals (`1,814` link-bearing malicious files drop out of `malicious` under `/URI=0`); plotted Figures 40–41; ran 3 retrained XGBoost ablations under `models/ablation/` (`0.9451` -> `0.9476` no `/URI` -> `0.9388` no regex); ran domain-shift check (`reports/domain_shift_demo.csv`).
+    - Created and executed [`notebooks/08_uri_counterfactual.ipynb`](notebooks/08_uri_counterfactual.ipynb): verified `554` test errors & `71.32%` `/URI==0` recall; ran `/URI=0,1,5,25` counterfactuals (`1,814` link-bearing malicious files drop out of `malicious` under `/URI=0`); plotted Figures 40–41; ran 3 retrained XGBoost ablations under `models/ablation/` (`0.9451` -> `0.9476` no `/URI` -> `0.9388` no regex); ran domain-shift check (`reports/domain_shift_demo.csv`).
     - Updated `MODEL_CARD.md` with plain-text formatting (zero `$...$`), operating points table (`0.50` vs `0.4083`), HGB overlap CI, counterfactual/ablation section, and decimal units.
   - **Small Fix Pass (`2026-11-26`)**:
     - Redesigned gauge labels cleanly below the bar (`BENIGN 0–29%`, `REVIEW 29–55%`, `MALICIOUS 55–100%`) with zero text inside `.gauge-track` and verified zero overlap/collision across `360/390/768/1280 px` in both themes.

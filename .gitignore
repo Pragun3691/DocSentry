@@ -13,6 +13,11 @@ data/processed/*.parquet
 # Private personal PDFs
 data/demo_pdfs/user/
 
+# Generated report bundle & archived UI screenshots
+report_assets/
+reports/figures/ui_archive/
+reports/figures/ui_*.png
+
 # Logs & environment secrets
 *.log
 .env

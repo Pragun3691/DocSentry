@@ -1,0 +1,7 @@
+# Ensure binary files are never altered by Git CRLF conversion
+*.pdf binary
+*.png binary
+*.jpg binary
+*.joblib binary
+*.woff2 binary
+*.parquet binary

@@ -63,7 +63,7 @@ for disk_name, csv_name in all_targets:
         mismatches.append(f"{csv_name}: raw_p mismatch")
     if csv_verdict != api_verdict:
         mismatches.append(f"{csv_name}: verdict mismatch")
-    if csv_sha != api_sha:
+    if csv_sha != "redacted" and csv_sha != api_sha:
         mismatches.append(f"{csv_name}: sha256 mismatch")
     if csv_size != api_size:
         mismatches.append(f"{csv_name}: size mismatch")
