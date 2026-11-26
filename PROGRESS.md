@@ -407,6 +407,10 @@
     - **Domain-Shift & SHAP Explanation Fix (`2026-11-26`)**:
       - Fixed the domain-shift conclusion in `notebooks/08_uri_counterfactual.ipynb` (computed via f-strings from `reports/domain_shift_demo.csv`) and `MODEL_CARD.md`: corrected `user_pdf_1..9` spread (`9.20`th–`74.29`th size percentile, 5/9 below 25th; `15.10`th–`73.66`th string count; `11.24`th–`91.53`th entropy), separated `synthetic_f` (`87.99`th size, `98.41`th string count, `0.26`th entropy) from `synthetic_a`–`e` (`0.00`th–`4.80`th size), and documented the `uri_pct_rank = 82.84` zero-link tie plateau.
       - Ran `scripts/analyze_demo_shap.py` for the 6 synthetic PDFs + `user_pdf_3.pdf` and `user_pdf_8.pdf`, added the top-5 SHAP contributor table to `MODEL_CARD.md`, noted the 3 files (`synthetic_a`, `synthetic_f`, `user_pdf_8`) on the `0.4082` calibrator plateau, and replaced `"keys on link counts and keywords"` in `app/static/index.html` and `README.md` with evidence-based wording.
+    - **Demo Note Refinement & Fresh-Clone Smoke Test (`2026-11-26`)**:
+      - Verified no entropy feature appears in the top SHAP contributors for `synthetic_a`, `synthetic_b`, or `synthetic_c`; removed `"low entropy"` as a stated cause in `app/static/index.html` `.sample-note`, matched upload-panel units (`20 MiB (20.97 MB)` and `5.25 MiB (5.5 MB)`), and kept `.sample-note` to `<= 3` lines at `390 px`.
+      - Ran a fresh-clone smoke test in `C:\temp\docsentry_check` from the local repo with a clean venv: `pip install -r requirements.txt` succeeded, `tests/test_api.py` (11/11) passed, and `GET /health`, `GET /model-info`, and `POST /scan` returned HTTP 200; confirmed `test_extract.py` and `test_infer.py` require git-ignored `data/processed/X_test_tree.parquet`.
+      - Updated `README.md` with the complete folder tree, fresh-clone vs full-reproducibility test commands, and Notebook `08` documentation.
 
 
 

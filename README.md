@@ -17,41 +17,47 @@ DocSentry/
 ├── app/                            # Local production web application
 │   ├── main.py                     # FastAPI backend (security checks, REST API)
 │   └── static/                     # Single-page interface (pure HTML/CSS/JS, zero CDNs)
+│       ├── fonts/                  # Self-hosted WOFF2 fonts + LICENSES.md (OFL-1.1)
 │       ├── index.html              # Responsive single-page layout
-│       ├── style.css               # Modern dark & light theme stylesheets
+│       ├── style.css               # Paper & mono light/dark theme stylesheets
 │       └── app.js                  # Vanilla JS frontend, SVG charts, session history
 ├── data/
-│   ├── raw/                        # Compressed raw EMBER2024 JSONL subset (64 weeks)
-│   ├── processed/                  # Deduplicated, scaled, and split Parquet datasets
+│   ├── raw/                        # Git-ignored: raw EMBER2024 JSONL subset (64 weeks)
+│   ├── processed/                  # Git-ignored: Parquet datasets; feature_names.json is tracked
 │   └── demo_pdfs/
 │       ├── synthetic/              # Harmless pure-Python synthetic PDF test suite
-│       └── user/                   # Real-world user evaluation documents
+│       └── user/                   # Git-ignored: private user evaluation documents
 ├── models/                         # Serialized models and operational artifacts
+│   ├── ablation/                   # Retrained XGBoost ablation models (Notebook 08)
 │   ├── best_model.joblib           # Champion tuned XGBoost model
 │   ├── calibrator.joblib           # Fitted IsotonicRegression calibrator
 │   └── thresholds.json             # Operating threshold, review band, and OOD bounds
-├── notebooks/                      # Research and audit notebooks (01 to 07)
+├── notebooks/                      # Research and audit notebooks (01 to 08)
 │   ├── 01_data_understanding.ipynb
 │   ├── 02_eda.ipynb
 │   ├── 03_preprocessing.ipynb
 │   ├── 04_modeling.ipynb
 │   ├── 05_explain_uncertainty.ipynb
 │   ├── 06_real_pdf_demo.ipynb
-│   └── 07_demo_diagnostics.ipynb
+│   ├── 07_demo_diagnostics.ipynb
+│   └── 08_uri_counterfactual.ipynb
+├── report_assets/                  # Curated figures, CSVs, and index.md for reporting
 ├── reports/                        # Metrics, CSV summaries, and figures
-│   ├── figures/                    # Saved figures (01 to 39, plus UI screenshots)
-│   ├── model_comparison.csv       # Multi-model test benchmark metrics
+│   ├── figures/                    # Saved figures (01 to 41, plus UI screenshots)
+│   ├── model_comparison.csv        # Multi-model test benchmark metrics
 │   └── demo_scan_results.csv       # Batch scan output for synthetic demo suite
 ├── scripts/                        # Utility CLI scripts
 │   ├── generate_synthetic_pdfs.py  # Pure-Python synthetic PDF generator
+│   ├── make_report_assets.py       # Bundles report_assets/ from reports/
 │   └── scan_pdfs.py                # Batch directory scanner utility
 ├── src/                            # Production Python library
 │   ├── docsentry_extract.py        # Static feature extraction pipeline
 │   └── docsentry_infer.py          # Calibrated inference, SHAP, and OOD engine
 ├── tests/                          # Automated unit test suite
-│   ├── test_extract.py             # Pipeline fidelity and invariant tests
-│   ├── test_infer.py               # Model and calibrator unit tests
-│   └── test_api.py                 # FastAPI TestClient endpoint and security tests
+│   ├── test_extract.py             # Pipeline fidelity tests (requires data/processed/*.parquet)
+│   ├── test_infer.py               # Model & calibrator tests (requires data/processed/*.parquet)
+│   └── test_api.py                 # FastAPI TestClient & scan tests (runs out of the box)
+├── MODEL_CARD.md                   # Model specifications, CIs, limitations, and domain-shift audit
 ├── PROGRESS.md                     # Comprehensive research and progress log
 ├── requirements.txt                # Exact pinned dependencies
 └── run_app.bat                     # Windows one-click launcher
@@ -126,15 +132,17 @@ Arguments:
 
 Follow these steps in order to reproduce the entire DocSentry pipeline from raw data to the running web application:
 
-### 1. Download EMBER2024 PDF Subset
-Ensure `requirements.txt` is installed (including `signify==0.7.1`, pinned for `thrember` compatibility), then download only the PDF subset into `data/raw/`:
+### 1. Download EMBER2024 PDF Subset (Optional for Inference; Required for Notebooks 01–05 & 08)
+Raw EMBER2024 JSONL files (`data/raw/`) and processed Parquet files (`data/processed/*.parquet`) are git-ignored. The web app, CLI scanner, and `tests/test_api.py` run immediately from a fresh clone using the tracked `models/` and `data/processed/feature_names.json` artifacts.
+
+To reproduce the dataset and training notebooks from scratch, ensure `requirements.txt` is installed (including `signify==0.7.1`, pinned for `thrember` compatibility), then download only the PDF subset into `data/raw/`:
 ```python
 import thrember
 thrember.download_dataset("data/raw", file_type="PDF")
 ```
 
-### 2. Execute Research Notebooks in Order (`01` to `07`)
-Run the notebooks sequentially so each stage's Parquet outputs, models, and calibration artifacts are generated for the next stage:
+### 2. Execute Research Notebooks in Order (`01` to `08`)
+Run the notebooks sequentially so each stage's Parquet outputs (`data/processed/*.parquet`), models, and calibration artifacts are generated for the next stage:
 1. `notebooks/01_data_understanding.ipynb` — Inspects raw weekly `.jsonl` partitions and schema.
 2. `notebooks/02_eda.ipynb` — SHA-256 deduplication and exploratory univariate/bivariate analysis.
 3. `notebooks/03_preprocessing.ipynb` — Temporal 42/10/12-week split, constant-feature pruning (696 → 658), log1p/scaling, and adversarial drift checks.
@@ -142,9 +150,14 @@ Run the notebooks sequentially so each stage's Parquet outputs, models, and cali
 5. `notebooks/05_explain_uncertainty.ipynb` — Fits Isotonic Regression calibrator, optimizes review band `[0.290, 0.550]`, runs bootstrap CIs, size-matched & `/URI` dependence audits, and computes SHAP explanations.
 6. `notebooks/06_real_pdf_demo.ipynb` — Runs end-to-end static extraction & inference on synthetic demo PDFs.
 7. `notebooks/07_demo_diagnostics.ipynb` — Audits the isotonic calibration plateau and establishes OOD percentile bounds.
+8. `notebooks/08_uri_counterfactual.ipynb` — Runs `/URI` counterfactual dose-response curves, feature ablations, and domain-shift percentile checks.
 
 ### 3. Run Automated Unit Tests
-To run the complete unit test suite (19 tests covering pipeline fidelity, mathematical invariants, inference logic, security boundaries, determinism, and API schemas):
+- **Fresh clone (no dataset download required, 11 tests):**
+```bash
+python -m unittest tests/test_api.py -v
+```
+- **Full suite (19 tests; `test_extract.py` and `test_infer.py` require `data/processed/X_test_tree.parquet` generated by Notebooks 01–03):**
 ```bash
 python -m unittest discover tests -v
 ```

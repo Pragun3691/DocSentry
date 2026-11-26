@@ -56,7 +56,7 @@
             <input type="file" id="file-input" class="sr-only" accept=".pdf,application/pdf">
             <label for="file-input" class="upload-label">
               <span class="upload-title">Drop a PDF here to inspect</span>
-              <span class="upload-meta">PDF only, up to 20 MiB, processed in memory and never saved</span>
+              <span class="upload-meta">PDF only, up to 20 MiB (20.97 MB), processed in memory and never saved</span>
             </label>
             <div class="upload-actions">
               <button type="button" id="btn-browse" class="pill-btn pill-btn-primary">Choose PDF file</button>
@@ -67,9 +67,9 @@
           <div class="sample-row">
             <span class="sample-label">Try a sample:</span>
             <button type="button" class="pill-btn pill-btn-sm sample-btn" data-sample="malicious">Sample: harmless 20-page report</button>
-            <button type="button" class="pill-btn pill-btn-sm sample-btn" data-sample="review">Sample: harmless 5.5 MB padded file</button>
+            <button type="button" class="pill-btn pill-btn-sm sample-btn" data-sample="review">Sample: harmless 5.25 MiB (5.5 MB) padded file</button>
           </div>
-          <p class="sample-note">Both samples are harmless synthetic PDFs. They are flagged or sent to review mainly because their low entropy and unusual string-count or byte patterns (and, for the 5.5 MB sample, the calibrator's 0.4082 plateau) differ from typical benign PDFs, not because of links or keywords.</p>
+          <p class="sample-note">Harmless synthetic PDFs: 20-page flagged on string/byte counts; 5.25 MiB hits 0.4082 review step.</p>
 
           <!-- Loading State -->
           <div id="loading-overlay" class="loading-box" role="status" aria-live="polite">
