@@ -155,6 +155,8 @@ uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 See [MODEL_CARD.md](MODEL_CARD.md) for complete model specifications, metrics, confidence intervals, and ethical disclosures. To bundle all final figures and CSVs for reporting, run `python scripts/make_report_assets.py`.
 
+> **Demo note:** All six `synthetic_*.pdf` files are harmless by construction. `synthetic_a`, `synthetic_b`, and `synthetic_c` are flagged or sent to review primarily by low extracted string counts (`+0.63` to `+0.86` SHAP) and byte-histogram anomalies (`0x49` `+0.37` to `+0.43`) despite having zero links; `synthetic_f` has a low raw score (`0.2080`) driven toward benign by its size, string count, and zero links, but lands on the calibrator's `0.4082` `needs_review` plateau (along with `synthetic_a` and `user_pdf_8`). Only `synthetic_d` (`/URI` `+1.64`, `https://` `+0.43`) and `synthetic_e` (`javascript` `+1.88`) are flagged for link counts or script keywords.
+
 ---
 
 ## Benchmark Performance Highlights (EMBER2024 Test Set, 12,000 Documents)

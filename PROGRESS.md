@@ -380,5 +380,33 @@
     - Scanned all 3 synthetic PDFs and all 9 user PDFs through HTTP `POST /scan`; 12 / 12 verdicts matched expected outputs identically.
     - Captured full-page headless UI screenshot in [`reports/figures/ui_landing.png`](file:///<PROJECT_ROOT>/reports/figures/ui_landing.png) via Microsoft Edge headless mode.
 
+---
+
+## Printed Technical Form UI Redesign & Model Card Corrections (`2026-11-26`)
+- **Phase**: Paper/ink/mint/peach printed lab-report UI redesign (`Space Grotesk` + `IBM Plex Mono` offline `@font-face`), neutral regex labels, calibrated `/URI` evidence note (`71.32%`), and recomputed `MODEL_CARD.md` fixes.
+- **Completed**: 2026-11-26
+- **Key Changes**:
+  - **UI & Fonts**: Added local `Space Grotesk` and `IBM Plex Mono` `.woff2` fonts in `app/static/fonts/`, warm paper dotted-grid canvas (`#F1EFE6` light / `#121210` dark), black label bars, ticker strip (`prefers-reduced-motion` safe), mint upload & peach details panels, clickable session history, accessible hidden `<table>` alternatives for SVG charts, and dynamic `/model-info` rendering.
+  - **Neutral Labels & Calibrated `/URI` Note**: Updated `app/main.py` regex labels to `"Occurrences of the word '<word>'"` with behaviour disclaimer tooltip; switched `/URI == 0` evidence note to calibrated-threshold recall (`71.32%`), keeping `62.23%` default-threshold recall in the Model section.
+  - **Model Card Fixes**: Recomputed 6-family SHAP shares (`38.3%`, `25.2%`, `21.2%`, `8.3%`, `4.7%`, `2.4%` — fixing the `0.0%` `strings_printabledist_` prefix bug), verified error breakdowns (`151` validation, `554` test), corrected TLSH overlap to validation-vs-test (week 45 vs week 63), labeled validation Brier/ECE as in-sample, verified `/URI > 0` calibrated FPR (`72/1,275 = 5.65%`), and added the OOD sanity-check paragraph.
+  - **Screenshots & Assets**: Captured 17 `ui_v2_*.png` screenshots (synthetic PDFs only) and re-ran `scripts/make_report_assets.py` (65 figures + 2 CSVs).
+  - **Mobile Overflow Fix, Copy Polish & Reconciled Numbers (`ui_v3`)**:
+    - Fixed 360px/390px horizontal overflow at the source by removing `overflow-x: hidden` from `body`, adding `min-width: 0` on flex/grid children, constraining `.sr-only` tables (`max-width: 1px; max-height: 1px`), and capping `.ticker-strip` / `.verdict-badge` widths. Verified `0` overflow across all 40 Playwright combinations (`360/390/768/1280px` × `light/dark` × `empty/benign/review/malicious/ood`).
+    - Stripped `[Notice: ...]` from UI reason text (replaced by reworded `OUT OF RANGE` banner with `/model-info` envelope), renamed sample buttons (`Sample: harmless 20-page report`, `Sample: harmless 5.5 MB padded file`), added `text-wrap: balance/pretty`, and added desktop-only hero starburst SVG.
+    - Reconciled Notebook 05 Cell 16 (`strings_printabledist_` prefix fix, regenerating Figure 35) with `MODEL_CARD.md` and `reports/model_card_metrics.json` (`38.26%`, `25.17%`, `21.22%`, `8.32%`, `4.65%`, `2.38%` = `100.00%`).
+    - Captured sliced `ui_v3_*.png` full-page screenshots (`<= 1400 px` height) and 7 section screenshots.
+  - **UI Review Fixes, Notebook 08 (`/URI` Counterfactual & Ablations) & Model Card Finalization**:
+    - Moved top ticker above header (`32 px`, `13 px` mono, dark card hairline surface), fixed `< 640 px` mobile stacked SHAP/family charts (`width >= 4 px` verified), fixed `/model-info` `inside_band`/`outside_band` error readout, added `HISTORY` label bar & verified real `#file-input` 3-row reload, added 3 distinct surface levels + inside-bar gauge labels, switched all displayed sizes to decimal MB (`1 MB = 1,000,000 B`) and `20 MiB` upload cap, and updated OOD banner wording.
+    - Created and executed [`notebooks/08_uri_counterfactual.ipynb`](file:///<PROJECT_ROOT>/notebooks/08_uri_counterfactual.ipynb): verified `554` test errors & `71.32%` `/URI==0` recall; ran `/URI=0,1,5,25` counterfactuals (`1,814` link-bearing malicious files drop out of `malicious` under `/URI=0`); plotted Figures 40–41; ran 3 retrained XGBoost ablations under `models/ablation/` (`0.9451` -> `0.9476` no `/URI` -> `0.9388` no regex); ran domain-shift check (`reports/domain_shift_demo.csv`).
+    - Updated `MODEL_CARD.md` with plain-text formatting (zero `$...$`), operating points table (`0.50` vs `0.4083`), HGB overlap CI, counterfactual/ablation section, and decimal units.
+  - **Small Fix Pass (`2026-11-26`)**:
+    - Redesigned gauge labels cleanly below the bar (`BENIGN 0–29%`, `REVIEW 29–55%`, `MALICIOUS 55–100%`) with zero text inside `.gauge-track` and verified zero overlap/collision across `360/390/768/1280 px` in both themes.
+    - Verified `.ticker-strip` dark theme uses `--card` (`rgb(28, 28, 25)`) with `--ink` text (`rgb(241, 239, 230)`).
+    - Replaced `"minimal suspicious indicators"` with `"small opposing signals"` in `app/main.py`.
+    - Fixed Notebook 08's `"What this shows"` cell (explicitly separating `t = 0.4083` recall fall from `> 0.550` malicious-verdict transitions `1,619` `needs_review` / `195` `benign`, and stating no F1 loss without `/URI`) and added the domain-shift summary to `MODEL_CARD.md`.
+    - **Domain-Shift & SHAP Explanation Fix (`2026-11-26`)**:
+      - Fixed the domain-shift conclusion in `notebooks/08_uri_counterfactual.ipynb` (computed via f-strings from `reports/domain_shift_demo.csv`) and `MODEL_CARD.md`: corrected `user_pdf_1..9` spread (`9.20`th–`74.29`th size percentile, 5/9 below 25th; `15.10`th–`73.66`th string count; `11.24`th–`91.53`th entropy), separated `synthetic_f` (`87.99`th size, `98.41`th string count, `0.26`th entropy) from `synthetic_a`–`e` (`0.00`th–`4.80`th size), and documented the `uri_pct_rank = 82.84` zero-link tie plateau.
+      - Ran `scripts/analyze_demo_shap.py` for the 6 synthetic PDFs + `user_pdf_3.pdf` and `user_pdf_8.pdf`, added the top-5 SHAP contributor table to `MODEL_CARD.md`, noted the 3 files (`synthetic_a`, `synthetic_f`, `user_pdf_8`) on the `0.4082` calibrator plateau, and replaced `"keys on link counts and keywords"` in `app/static/index.html` and `README.md` with evidence-based wording.
+
 
 

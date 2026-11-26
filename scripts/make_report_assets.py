@@ -42,11 +42,15 @@ FIGURE_META = {
     "37_": ("Local SHAP feature contributions across the 6 synthetic demo PDFs.", "notebooks/06_real_pdf_demo.ipynb"),
     "38_": ("Isotonic regression calibration step function showing the [0.2004, 0.3034] -> 0.4082 plateau.", "notebooks/07_demo_diagnostics.ipynb"),
     "39_": ("Training distribution of file size and string count with 0.5%-99.5% OOD bounds.", "notebooks/07_demo_diagnostics.ipynb"),
+    "40_": ("Counterfactual /URI dose-response curve (mean calibrated probability and 10th-90th percentile band).", "notebooks/08_uri_counterfactual.ipynb"),
+    "41_": ("Individual Conditional Expectation (ICE) curves for 30 benign and 30 malicious files under /URI sweep.", "notebooks/08_uri_counterfactual.ipynb"),
 }
 
 CSV_META = {
     "model_comparison.csv": ("Validation and test benchmark metrics across Logistic Regression, Random Forest, XGBoost, and HistGradientBoosting.", "notebooks/04_modeling.ipynb"),
     "demo_scan_results.csv": ("Batch static scan results, probabilities, OOD flags, and top 3 SHAP contributors for demo PDFs.", "scripts/scan_pdfs.py"),
+    "uri_counterfactual_summary.csv": ("Summary of /URI removal/addition counterfactuals and retrained feature ablation metrics.", "notebooks/08_uri_counterfactual.ipynb"),
+    "domain_shift_demo.csv": ("Percentile ranks within training benign distribution for synthetic and anonymised user PDFs.", "notebooks/08_uri_counterfactual.ipynb"),
 }
 
 
@@ -65,7 +69,7 @@ def main():
     fig_out.mkdir(parents=True, exist_ok=True)
 
     copied_figs = []
-    fig_pattern = re.compile(r"^(2[0-9]|3[0-9])_.*\.png$|^ui_.*\.png$")
+    fig_pattern = re.compile(r"^(2[0-9]|3[0-9]|4[0-9])_.*\.png$|^ui_.*\.png$")
     for p in sorted(FIGURES_DIR.glob("*.png")):
         if fig_pattern.match(p.name):
             shutil.copy2(p, fig_out / p.name)
