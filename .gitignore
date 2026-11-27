@@ -13,10 +13,29 @@ data/processed/*.parquet
 # Private personal PDFs
 data/demo_pdfs/user/
 
-# Generated report bundle & archived UI screenshots
+# Generated report bundle & dev/log artifacts kept locally on disk
 report_assets/
-reports/figures/ui_archive/
-reports/figures/ui_*.png
+build_notebook_04.py
+scripts/dev/
+docs/development_log.md
+
+# Curated UI screenshots (keep only the 2 shown in README.md)
+docs/screenshots/*
+!docs/screenshots/ui_v3_light_needs_review_1280_part1.png
+!docs/screenshots/ui_v3_dark_needs_review_390_part1.png
+
+# Regenerable figures (keep only 10 key summary figures; notebooks regenerate the rest locally)
+reports/figures/*
+!reports/figures/20_model_validation_comparison.png
+!reports/figures/21_test_confusion_matrices.png
+!reports/figures/22_test_roc_curves.png
+!reports/figures/23_test_pr_curves.png
+!reports/figures/29_calibration_reliability_diagrams.png
+!reports/figures/31_accuracy_vs_coverage_curve.png
+!reports/figures/32_weekly_review_rate_drift.png
+!reports/figures/35_shap_family_importance_bar.png
+!reports/figures/38_calibrator_plateau_steps.png
+!reports/figures/40_uri_dose_response.png
 
 # Logs & environment secrets
 *.log

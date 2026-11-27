@@ -2,7 +2,9 @@
 
 **DocSentry** is a static, calibrated, explainable PDF malware triage engine trained on the EMBER2024 PDF benchmark subset ([FutureComputing4AI/EMBER2024](https://github.com/FutureComputing4AI/EMBER2024)). It inspects raw byte histograms, byte-entropy distributions, printable strings, and structural indicators without ever opening, rendering, or executing the PDF, and pairs an Isotonic Regression calibrator with a manual-review band (`[0.290, 0.550]`), per-document SHAP attributions, and out-of-distribution (OOD) percentile checks.
 
-![DocSentry Web UI](docs/screenshots/ui_v3_light_needs_review_1280_part1.png)
+| Desktop (1280 px, Light) | Mobile (390 px, Dark) |
+| :---: | :---: |
+| ![DocSentry Desktop UI](docs/screenshots/ui_v3_light_needs_review_1280_part1.png) | ![DocSentry Mobile UI](docs/screenshots/ui_v3_dark_needs_review_390_part1.png) |
 
 ---
 
@@ -81,13 +83,11 @@ DocSentry/
 │   ├── demo_pdfs/synthetic/    # Harmless pure-Python synthetic PDFs for smoke testing
 │   └── processed/              # feature_names.json, preprocessing_report.json, scaler.joblib
 ├── docs/
-│   ├── development_log.md      # Chronological research & engineering log
-│   └── screenshots/            # Curated UI screenshots (desktop & mobile, light & dark)
+│   └── screenshots/            # Desktop (1280 px) & mobile (390 px) UI screenshots
 ├── models/                     # Champion XGBoost, Isotonic calibrator, thresholds, ablation models
 ├── notebooks/                  # Notebooks 01–08 (EDA, preprocessing, modeling, SHAP, audit)
-├── reports/                    # Benchmark CSVs, JSON metrics, and figures (01–41)
+├── reports/                    # Benchmark CSVs, JSON metrics, and 10 key summary figures
 ├── scripts/                    # CLI utilities (scan_pdfs, make_report_assets, verify_12_files)
-│   └── dev/                    # One-off notebook & UI QA scripts
 ├── src/                        # Static feature extractor & calibrated inference/SHAP engine
 ├── tests/                      # Unit tests (test_api, test_extract, test_infer)
 ├── LICENSE                     # MIT License
@@ -115,7 +115,6 @@ DocSentry performs **pure static analysis** on raw PDF bytes and extracted print
 ## Documentation
 
 - [MODEL_CARD.md](MODEL_CARD.md) — Complete model specifications, calibration analysis, error breakdown, and domain-shift check.
-- [docs/development_log.md](docs/development_log.md) — Full development and experiment log.
 
 ---
 
